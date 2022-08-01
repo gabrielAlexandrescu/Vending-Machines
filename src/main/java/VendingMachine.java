@@ -1,4 +1,3 @@
-import com.sun.security.jgss.GSSUtil;
 
 import java.io.*;
 import java.util.HashMap;
@@ -122,7 +121,7 @@ public class VendingMachine {
         bw.write("20 cents: "+centsInInventory.get("20")+"\n");
         bw.write("10 cents: "+centsInInventory.get("10")+"\n");
         bw.write("5 cents: "+centsInInventory.get("5")+"\n");
-        bw.write("1 cents: "+centsInInventory.get("1")+"\n");
+        bw.write("1 cents: "+centsInInventory.get("1")+"\n\n");
         for(Map.Entry<Product, Integer> entry : productsInInventory.entrySet())
             bw.write(entry.getKey().toString() + ": "+ entry.getValue()+"\n");
         bw.close();
@@ -160,8 +159,9 @@ public class VendingMachine {
         }
     }
 
-    public void loadProduct(double price, String code) {
-        Product product = new Product(price, code);
+    public void loadProduct(Product product) {
+        if(!productsInInventory.containsKey(product))
+            productsInInventory.put(product,0);
         if (productsInInventory.get(product) == 10)
             System.out.println("There are too many products on the rack; impossible operation");
         else productsInInventory.put(product, productsInInventory.get(product) + 1);
@@ -173,11 +173,16 @@ public class VendingMachine {
         else System.out.println("Only users with admin privileges can load money!");
     }
 
-    public void unloadProduct(double price, String code) {
-        Product product = new Product(price, code);
-        if (productsInInventory.get(product) == 0)
-            System.out.println("There are no products to unload; impossible operation");
-        else productsInInventory.put(product, productsInInventory.get(product) - 11);
+    public void unloadProduct(Product product) {
+        if(!user.isAdmin())
+            System.out.println("Only users with admin privileges can unload products!");
+        else {
+            if (productsInInventory.get(product) == 1)
+                productsInInventory.remove(product);
+            else if (!productsInInventory.containsKey(product))
+                System.out.println("There is no such product to unload; impossible operation");
+            else productsInInventory.put(product, productsInInventory.get(product) - 1);
+        }
     }
 
     public void unloadMoney() {
@@ -220,15 +225,9 @@ public class VendingMachine {
     public void setCentsInInventory(LinkedHashMap<String, Integer> centsInInventory) {
         this.centsInInventory = centsInInventory;
     }
-
     public HashMap<Product, Integer> getProductsInInventory() {
         return productsInInventory;
     }
-
-    public void setProductsInInventory(LinkedHashMap<Product, Integer> productsInInventory) {
-        this.productsInInventory = productsInInventory;
-    }
-
     public HashMap<String, Integer> getCentsAddedByUser() {
         return centsAddedByUser;
     }
