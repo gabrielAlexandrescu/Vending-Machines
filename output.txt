@@ -1,0 +1,15 @@
+Current cents and bills in inventory:
+50 euros: null
+20 euros: null
+10 euros: null
+5 euros: null
+2 euros: 9
+1 euros: 4
+50 cents: 5
+20 cents: 0
+10 cents: 8
+5 cents: 10
+1 cents: 0
+Product{price=3.5, code='D12'}: 10
+Product{price=12.55, code='E1'}: 10
+Product{price=6.54, code='A20'}: 1
