@@ -5,7 +5,7 @@ public class User{
     private String username;
     private HashMap<String,Integer> transactions;
     LinkedHashMap<String,Integer> userWallet;
-        // de separat user de admin cumva
+    // de gandit cum se baga in baza de date
     public User(String username) {
         this.username = username;
         this.transactions = new HashMap<String,Integer>();

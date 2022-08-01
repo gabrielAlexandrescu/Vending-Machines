@@ -3,6 +3,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class VendingMachineTests {
     private VendingMachine vendingMachine = new VendingMachine(new User("Test"),true);
     @Test
@@ -42,10 +44,11 @@ public class VendingMachineTests {
         Product p1 = new Product(3.5,"D12");
         Product p2= new Product(12.55,"E1");
         Product p3 = new Product(6.54,"A20");
-        products.put(p1,2);
-        products.put(p2,2);
-        products.put(p3,1);
-        vendingMachine.setProductsInInventory(products);
+        vendingMachine.loadProduct(p1);
+        vendingMachine.loadProduct(p1);
+        vendingMachine.loadProduct(p2);
+        vendingMachine.loadProduct(p2);
+        vendingMachine.loadProduct(p3);
         vendingMachine.insertMoney(200);
         vendingMachine.insertMoney(100);
         vendingMachine.insertMoney(50);
@@ -68,5 +71,38 @@ public class VendingMachineTests {
         products.put(p1,10);
         products.put(p2,10);
         vendingMachine.getStatus();
+    }
+    @Test
+    public void testLoadingProducts(){
+        Product p1 = new Product(12.5,"D12");
+        Product p2 = new Product(1,"E2");
+        Product p3 = new Product(2.5,"A1");
+        Product p4 = new Product(5.3,"F8");
+        Product p5 = new Product(7.2,"D5");
+        Product p6 = new Product(8.9,"C9");
+        vendingMachine.loadProduct(p1);
+        vendingMachine.loadProduct(p2);
+        vendingMachine.loadProduct(p3);
+        assertTrue(vendingMachine.productsInInventory.size() == 3);
+        vendingMachine.unloadProduct(p3);
+        vendingMachine.unloadProduct(p2);
+        assertTrue(vendingMachine.productsInInventory.size() == 1);
+        assertTrue(vendingMachine.productsInInventory.containsKey(p1));
+    }
+    @Test
+    public void testLoadingMoney(){
+        LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
+        cents.put("5000",0);
+        cents.put("2000",0);
+        cents.put("1000",0);
+        cents.put("500",1);
+        cents.put("200",1);
+        cents.put("100",2);
+        cents.put("50",3);
+        cents.put("20",0);
+        cents.put("10",12);
+        cents.put("5",10);
+        cents.put("1",0);
+        vendingMachine.setCentsInInventory(cents);
     }
 }
