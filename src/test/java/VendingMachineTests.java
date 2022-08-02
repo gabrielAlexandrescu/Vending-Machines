@@ -3,10 +3,11 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class VendingMachineTests {
-    private VendingMachine vendingMachine = new VendingMachine(new User("Test"),true);
+    private VendingMachine vendingMachine = new VendingMachine(new Admin("Test","nuj"),true);
+    private VendingMachine nonAdminvendingMachine = new VendingMachine(new User("Test"),true);
     @Test
     public void testChange(){
         LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
@@ -92,17 +93,42 @@ public class VendingMachineTests {
     @Test
     public void testLoadingMoney(){
         LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
-        cents.put("5000",0);
-        cents.put("2000",0);
-        cents.put("1000",0);
+        cents.put("5000",1);
+        cents.put("2000",1);
+        cents.put("1000",10);
         cents.put("500",1);
         cents.put("200",1);
         cents.put("100",2);
         cents.put("50",3);
-        cents.put("20",0);
+        cents.put("20",1);
         cents.put("10",12);
         cents.put("5",10);
-        cents.put("1",0);
+        cents.put("1",1);
         vendingMachine.setCentsInInventory(cents);
+        nonAdminvendingMachine.setCentsInInventory(cents);
+        vendingMachine.unloadMoney();
+        nonAdminvendingMachine.unloadMoney();
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("5000"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("2000"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("1000"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("500"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("200"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("100"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("50"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("20"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("10"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("5"));
+        assertEquals(0, (int) vendingMachine.centsInInventory.get("1"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("5000"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("2000"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("1000"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("500"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("200"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("100"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("50"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("20"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("10"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("5"));
+        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("1"));
     }
 }
