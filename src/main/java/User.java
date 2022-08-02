@@ -23,34 +23,25 @@ public class User{
         this.userWallet.put("1",0);
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public HashMap<String, Integer> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(HashMap<String, Integer> transactions) {
-        this.transactions = transactions;
-    }
-
     public void addTransaction(String productName, int amountBought){
+        if(!transactions.containsKey(productName))
+            this.transactions.put(productName,0);
         this.transactions.put(productName, transactions.get(productName)+1);
     }
 
-    public LinkedHashMap<String, Integer> getUserWallet() {
-        return userWallet;
-    }
 
     public void setUserWallet(LinkedHashMap<String, Integer> userWallet) {
         this.userWallet = userWallet;
     }
     public boolean isAdmin(){
         return false;
+    }
+
+    public LinkedHashMap<String, Integer> getUserWallet() {
+        return userWallet;
+    }
+
+    public HashMap<String, Integer> getTransactions() {
+        return transactions;
     }
 }
