@@ -2,6 +2,8 @@
 import java.io.*;
 import java.util.*;
 
+import com.utils.Utils;
+
 public class VendingMachine {
     private User user;
     boolean canTakeBills;
@@ -20,39 +22,9 @@ public class VendingMachine {
         this.centsAddedByUser = new LinkedHashMap<>();
         this.change = new LinkedHashMap<>();
         this.centsUsedToBuyProduct = new LinkedHashMap<>();
-        centsInInventory.put("5000", 0);
-        centsInInventory.put("2000", 0);
-        centsInInventory.put("1000", 0);
-        centsInInventory.put("500", 0);
-        centsInInventory.put("200", 0);
-        centsInInventory.put("100", 0);
-        centsInInventory.put("50", 0);
-        centsInInventory.put("20", 0);
-        centsInInventory.put("10", 0);
-        centsInInventory.put("5", 0);
-        centsInInventory.put("1", 0);
-        centsAddedByUser.put("5000", 0);
-        centsAddedByUser.put("2000", 0);
-        centsAddedByUser.put("1000", 0);
-        centsAddedByUser.put("500", 0);
-        centsAddedByUser.put("200", 0);
-        centsAddedByUser.put("100", 0);
-        centsAddedByUser.put("50", 0);
-        centsAddedByUser.put("20", 0);
-        centsAddedByUser.put("10", 0);
-        centsAddedByUser.put("5", 0);
-        centsAddedByUser.put("1", 0);
-        change.put("5000", 0);
-        change.put("2000", 0);
-        change.put("1000", 0);
-        change.put("500", 0);
-        change.put("200", 0);
-        change.put("100", 0);
-        change.put("50", 0);
-        change.put("20", 0);
-        change.put("10", 0);
-        change.put("5", 0);
-        change.put("1",0);
+        centsInInventory = Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        centsAddedByUser = Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        change = Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     public boolean giveChange(int cents) {
@@ -115,7 +87,7 @@ public class VendingMachine {
     public void buyMoreProducts(Product product) {
         int price = (int) (product.getPrice() * 100);
         for (Map.Entry<String, Integer> entry : centsInInventory.entrySet())
-            while (Integer.parseInt(entry.getKey()) <= price && centsAddedByUser.get(entry.getKey())>0 && price>0) {
+            while (Integer.parseInt(entry.getKey()) <= price && centsAddedByUser.get(entry.getKey()) > 0 && price > 0) {
                 centsAddedByUser.put(entry.getKey(), centsAddedByUser.get(entry.getKey()) - 1);
                 entry.setValue(entry.getValue() + 1);
                 price -= Integer.parseInt(entry.getKey());
@@ -149,13 +121,11 @@ public class VendingMachine {
             cents += Integer.parseInt(entry.getKey()) * entry.getValue();
         for (Map.Entry<Product, Integer> entry : productsInInventory.entrySet()) {
             if (Objects.equals(entry.getKey().getCode(), code)) {
-                if (cents >= (int)(entry.getKey().getPrice() * 100)) {
+                if (cents >= (int) (entry.getKey().getPrice() * 100)) {
                     entry.setValue(entry.getValue() - 1);
-                    if (!last)
-                    {
+                    if (!last) {
                         buyMoreProducts(entry.getKey());
-                    }
-                    else {
+                    } else {
                         addCentsToInventory();
                         giveChange((int) (cents - (entry.getKey().getPrice() * 100)));
                     }
@@ -183,14 +153,16 @@ public class VendingMachine {
     }
 
     public void loadProduct(Product product) {
-        if (!productsInInventory.containsKey(product)) {
-            productsInInventory.put(product, 0);
-        }
-        if (productsInInventory.get(product) == 10) {
-            System.out.println("There are too many products on the rack; impossible operation");
-        } else {
-            productsInInventory.put(product, productsInInventory.get(product) + 1);
-        }
+        if (user.isAdmin()) {
+            if (!productsInInventory.containsKey(product)) {
+                productsInInventory.put(product, 0);
+            }
+            if (productsInInventory.get(product) == 10) {
+                System.out.println("There are too many products on the rack; impossible operation");
+            } else {
+                productsInInventory.put(product, productsInInventory.get(product) + 1);
+            }
+        } else System.out.println("Only admins can load products!");
     }
 
     public void loadMoney(LinkedHashMap<String, Integer> cents) {
@@ -213,18 +185,8 @@ public class VendingMachine {
 
     public void unloadMoney() {
         if (user.isAdmin()) {
-            LinkedHashMap<String, Integer> zeroCents = new LinkedHashMap<>();
-            zeroCents.put("5000", 0);
-            zeroCents.put("2000", 0);
-            zeroCents.put("1000", 0);
-            zeroCents.put("500", 0);
-            zeroCents.put("200", 0);
-            zeroCents.put("100", 0);
-            zeroCents.put("50", 0);
-            zeroCents.put("20", 0);
-            zeroCents.put("10", 0);
-            zeroCents.put("5", 0);
-            zeroCents.put("1", 0);
+            LinkedHashMap<String, Integer> zeroCents;
+            zeroCents = Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             setCentsInInventory(zeroCents);
         } else System.out.println("Only users with admin privileges can unload money!");
     }
@@ -233,32 +195,17 @@ public class VendingMachine {
         for (Map.Entry<String, Integer> entry : centsAddedByUser.entrySet()) {
             user.userWallet.put(entry.getKey(), entry.getValue());
             entry.setValue(0);
-            System.out.println("All the " + entry.getKey() + "have been returned to the user!");
         }
     }
 
-    public User getUser() {
-        return user;
-    }
 
     public void login(User user) {
         this.user = user;
     }
 
-    public HashMap<String, Integer> getCentsInInventory() {
-        return centsInInventory;
-    }
 
     public void setCentsInInventory(LinkedHashMap<String, Integer> centsInInventory) {
         this.centsInInventory = centsInInventory;
-    }
-
-    public HashMap<Product, Integer> getProductsInInventory() {
-        return productsInInventory;
-    }
-
-    public HashMap<String, Integer> getCentsAddedByUser() {
-        return centsAddedByUser;
     }
 
     public void setCentsAddedByUser(LinkedHashMap<String, Integer> centsAddedByUser) {

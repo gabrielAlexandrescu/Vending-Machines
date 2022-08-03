@@ -1,3 +1,4 @@
+import com.utils.Utils;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -6,42 +7,25 @@ import java.util.LinkedHashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VendingMachineTests {
-    private VendingMachine vendingMachine = new VendingMachine(new Admin("Test","nuj"),true);
+    private final VendingMachine vendingMachine = new VendingMachine(new Admin("Test","nuj"),true);
     private VendingMachine nonAdminvendingMachine = new VendingMachine(new User("Test"),true);
     @Test
     public void testChange(){
         LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
-        cents.put("5000",0);
-        cents.put("2000",0);
-        cents.put("1000",0);
-        cents.put("500",1);
-        cents.put("200",1);
-        cents.put("100",2);
-        cents.put("50",3);
-        cents.put("20",0);
-        cents.put("10",12);
-        cents.put("5",10);
-        cents.put("1",0);
+        cents = Utils.formatHashMap(0,0,0,1,1,2,3,0,12,10,0);
         vendingMachine.loadMoney(cents);
-        assert(vendingMachine.giveChange(100));
-        assert(!vendingMachine.giveChange(101));
-        assert(vendingMachine.giveChange(355));
-        assert(!vendingMachine.giveChange(1));
-        assert(vendingMachine.giveChange(90));
-        assert(vendingMachine.giveChange(500));
+        assertTrue(vendingMachine.giveChange(100));
+        assertFalse(vendingMachine.giveChange(101));
+        assertTrue(vendingMachine.giveChange(355));
+        assertFalse(vendingMachine.giveChange(1));
+        assertTrue(vendingMachine.giveChange(90));
+        assertTrue(vendingMachine.giveChange(500));
     }
     @Test
     public void testBuy() throws IOException {
         LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
-        cents.put("200",1);
-        cents.put("100",2);
-        cents.put("50",3);
-        cents.put("20",0);
-        cents.put("10",12);
-        cents.put("5",10);
-        cents.put("1",0);
+        cents = Utils.formatHashMap(0,0,0,0,1,2,3,0,12,10,0);
         vendingMachine.loadMoney(cents);
-        LinkedHashMap<Product,Integer> products = new LinkedHashMap<>();
         Product p1 = new Product(3.5,"D12",null);
         Product p2= new Product(12.55,"E1",null);
         Product p3 = new Product(6.54,"A20",null);
@@ -53,7 +37,7 @@ public class VendingMachineTests {
         vendingMachine.insertMoney(200);
         vendingMachine.insertMoney(100);
         vendingMachine.insertMoney(50);
-        assert(vendingMachine.buyProduct(p1.getCode(),false));
+        assertTrue(vendingMachine.buyProduct(p1.getCode(),false));
         vendingMachine.insertMoney(200);
         vendingMachine.insertMoney(200);
         vendingMachine.insertMoney(200);
@@ -61,16 +45,14 @@ public class VendingMachineTests {
         vendingMachine.insertMoney(200);
         vendingMachine.insertMoney(200);
         vendingMachine.insertMoney(100);
-        assert(vendingMachine.buyProduct(p2.getCode(),false));
-        assert(!vendingMachine.buyProduct(p3.getCode(),false));
-        assert(!vendingMachine.buyProduct(null,false));
+        assertTrue(vendingMachine.buyProduct(p2.getCode(),false));
+        assertFalse(vendingMachine.buyProduct(p3.getCode(), false));
+        assertFalse(vendingMachine.buyProduct(null, false));
         vendingMachine.insertMoney(1000);
         vendingMachine.insertMoney(200);
         vendingMachine.insertMoney(50);
         vendingMachine.insertMoney(5);
-        assert(vendingMachine.buyProduct(p2.getCode(),false));
-        products.put(p1,10);
-        products.put(p2,10);
+        assertTrue(vendingMachine.buyProduct(p2.getCode(),true));
         vendingMachine.getStatus();
     }
     @Test
@@ -93,73 +75,25 @@ public class VendingMachineTests {
     @Test
     public void testLoadingMoney(){
         LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
-        cents.put("5000",1);
-        cents.put("2000",1);
-        cents.put("1000",10);
-        cents.put("500",1);
-        cents.put("200",1);
-        cents.put("100",2);
-        cents.put("50",3);
-        cents.put("20",1);
-        cents.put("10",12);
-        cents.put("5",10);
-        cents.put("1",1);
+        cents = Utils.formatHashMap(1,1,10,1,1,2,3,1,12,10,1);
         vendingMachine.loadMoney(cents);
         nonAdminvendingMachine.setCentsInInventory(cents);
         vendingMachine.unloadMoney();
         nonAdminvendingMachine.unloadMoney();
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("5000"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("2000"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("1000"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("500"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("200"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("100"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("50"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("20"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("10"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("5"));
-        assertEquals(0, (int) vendingMachine.centsInInventory.get("1"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("5000"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("2000"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("1000"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("500"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("200"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("100"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("50"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("20"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("10"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("5"));
-        assertNotEquals(0, (int) nonAdminvendingMachine.centsInInventory.get("1"));
+        assertFalse(vendingMachine.insertMoney(13));
+        LinkedHashMap<String,Integer> zeroCents = new LinkedHashMap<>();
+        zeroCents = Utils.formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
+        assertEquals(vendingMachine.centsInInventory,zeroCents);
+        assertNotEquals(nonAdminvendingMachine,zeroCents);
     }
     @Test
     public void testUsers(){
         User user = new User("pablo");
         Admin admin = new Admin("Leonardo","1q2w3e4r");
         LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
-
-        cents.put("5000",1); //
-        cents.put("2000",1); //
-        cents.put("1000",10); //
-        cents.put("500",1); //
-        cents.put("200",1); //
-        cents.put("100",2); //
-        cents.put("50",3); //
-        cents.put("20",2); //
-        cents.put("10",13); //
-        cents.put("5",10); //
-        cents.put("1",1); //
+        cents = Utils.formatHashMap(1,1,10,1,1,2,3,2,13,10,1);
         LinkedHashMap<String,Integer> zeroCents = new LinkedHashMap<>();
-        zeroCents.put("5000", 0);
-        zeroCents.put("2000", 0);
-        zeroCents.put("1000", 0);
-        zeroCents.put("500", 0);
-        zeroCents.put("200", 0);
-        zeroCents.put("100", 0);
-        zeroCents.put("50", 0);
-        zeroCents.put("20", 0);
-        zeroCents.put("10", 0);
-        zeroCents.put("5", 0);
-        zeroCents.put("1", 0);
+        zeroCents = Utils.formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
         vendingMachine.loadMoney(cents);
         user.setUserWallet(cents);
         vendingMachine.loadProduct(new Product(70.11,"D12","Tigari de foi"));
@@ -181,5 +115,21 @@ public class VendingMachineTests {
         userTransactions.put("Tigari cu foi",1);
         userTransactions.put("Tigari",2);
         assertEquals(user.getTransactions(),userTransactions);
+    }
+    @Test
+    public void testCancellingTransaction(){
+        User user = new User("test");
+        LinkedHashMap<String,Integer> userWallet = new LinkedHashMap<>();
+        userWallet = Utils.formatHashMap(0,0,0,0,2,1,0,0,0,0,0);
+        LinkedHashMap<String,Integer> copyUserWallet = new LinkedHashMap<>(userWallet);
+        vendingMachine.login(new Admin("test","test"));
+        vendingMachine.loadMoney(userWallet);
+        vendingMachine.login(user);
+        vendingMachine.insertMoney(200);
+        vendingMachine.insertMoney(200);
+        vendingMachine.insertMoney(100);
+        vendingMachine.cancelTransaction();
+        assertEquals(userWallet,copyUserWallet);
+
     }
 }

@@ -1,10 +1,10 @@
 Current cents and bills in inventory:
-50 euros: null
-20 euros: null
-10 euros: null
-5 euros: null
+50 euros: 0
+20 euros: 0
+10 euros: 1
+5 euros: 0
 2 euros: 9
-1 euros: 4
+1 euros: 3
 50 cents: 5
 20 cents: 0
 10 cents: 12
