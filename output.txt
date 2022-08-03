@@ -7,8 +7,8 @@ Current cents and bills in inventory:
 1 euros: 4
 50 cents: 5
 20 cents: 0
-10 cents: 8
-5 cents: 10
+10 cents: 12
+5 cents: 11
 1 cents: 0
 
 Product{price=3.5, code='D12'}: 1

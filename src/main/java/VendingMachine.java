@@ -52,6 +52,7 @@ public class VendingMachine {
         change.put("20", 0);
         change.put("10", 0);
         change.put("5", 0);
+        change.put("1",0);
     }
 
     public boolean giveChange(int cents) {
@@ -112,12 +113,12 @@ public class VendingMachine {
     }
 
     public void buyMoreProducts(Product product) {
-        int price = (int) product.getPrice()*100;
+        int price = (int) (product.getPrice() * 100);
         for (Map.Entry<String, Integer> entry : centsInInventory.entrySet())
-            while (Integer.parseInt(entry.getKey()) <= price) {
+            while (Integer.parseInt(entry.getKey()) <= price && centsAddedByUser.get(entry.getKey())>0 && price>0) {
                 centsAddedByUser.put(entry.getKey(), centsAddedByUser.get(entry.getKey()) - 1);
-                entry.setValue(entry.getValue()+1);
-                price-=Integer.parseInt(entry.getKey());
+                entry.setValue(entry.getValue() + 1);
+                price -= Integer.parseInt(entry.getKey());
             }
 
     }
@@ -148,18 +149,17 @@ public class VendingMachine {
             cents += Integer.parseInt(entry.getKey()) * entry.getValue();
         for (Map.Entry<Product, Integer> entry : productsInInventory.entrySet()) {
             if (Objects.equals(entry.getKey().getCode(), code)) {
-                if (cents >= entry.getKey().getPrice() * 100) {
+                if (cents >= (int)(entry.getKey().getPrice() * 100)) {
                     entry.setValue(entry.getValue() - 1);
-                    cents-=entry.getKey().getPrice();
                     if (!last)
+                    {
                         buyMoreProducts(entry.getKey());
+                    }
                     else {
                         addCentsToInventory();
                         giveChange((int) (cents - (entry.getKey().getPrice() * 100)));
                     }
                     System.out.println("Item " + entry.getKey().getCode() + " has been bought");
-
-
                     user.addTransaction(entry.getKey().getName(), 1);
                     return true;
                 } else {
@@ -183,11 +183,14 @@ public class VendingMachine {
     }
 
     public void loadProduct(Product product) {
-        if (!productsInInventory.containsKey(product))
+        if (!productsInInventory.containsKey(product)) {
             productsInInventory.put(product, 0);
-        if (productsInInventory.get(product) == 10)
+        }
+        if (productsInInventory.get(product) == 10) {
             System.out.println("There are too many products on the rack; impossible operation");
-        else productsInInventory.put(product, productsInInventory.get(product) + 1);
+        } else {
+            productsInInventory.put(product, productsInInventory.get(product) + 1);
+        }
     }
 
     public void loadMoney(LinkedHashMap<String, Integer> cents) {

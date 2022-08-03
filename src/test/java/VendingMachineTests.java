@@ -174,12 +174,12 @@ public class VendingMachineTests {
         vendingMachine.buyProduct("A2",false);
         vendingMachine.buyProduct("F3",false);
         vendingMachine.buyProduct("F3",true);
-        assertSame(user.getUserWallet(), zeroCents);
+        assertEquals(user.getUserWallet(), zeroCents);
         LinkedHashMap<String,Integer> userTransactions = new LinkedHashMap<>();
         userTransactions.put("Tigari de foi",1);
         userTransactions.put("Tigari cu aur",1);
         userTransactions.put("Tigari cu foi",1);
         userTransactions.put("Tigari",2);
-        assertSame(user.getTransactions(),userTransactions);
+        assertEquals(user.getTransactions(),userTransactions);
     }
 }
