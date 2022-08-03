@@ -1,3 +1,4 @@
+import com.Domain.*;
 import com.utils.Utils;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class VendingMachineTests {
     private final VendingMachine vendingMachine = new VendingMachine(new Admin("Test","nuj"),true);
     private final VendingMachine nonAdminVendingMachine = new VendingMachine(new User("Test"),true);
+
+
     @Test
     public void testChange(){
         LinkedHashMap<String,Integer> cents;
@@ -63,11 +66,11 @@ public class VendingMachineTests {
         vendingMachine.loadProduct(p1);
         vendingMachine.loadProduct(p2);
         vendingMachine.loadProduct(p3);
-        assertEquals(3, vendingMachine.productsInInventory.size());
+        assertEquals(3, vendingMachine.getProductsInInventory().size());
         vendingMachine.unloadProduct(p3);
         vendingMachine.unloadProduct(p2);
-        assertEquals(1, vendingMachine.productsInInventory.size());
-        assertTrue(vendingMachine.productsInInventory.containsKey(p1));
+        assertEquals(1, vendingMachine.getProductsInInventory().size());
+        assertTrue(vendingMachine.getProductsInInventory().containsKey(p1));
     }
     @Test
     public void testLoadingMoney(){
@@ -80,8 +83,8 @@ public class VendingMachineTests {
         assertFalse(vendingMachine.insertMoney(13));
         LinkedHashMap<String,Integer> zeroCents;
         zeroCents = Utils.formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
-        assertEquals(vendingMachine.centsInInventory,zeroCents);
-        assertNotEquals(nonAdminVendingMachine.centsInInventory,zeroCents);
+        assertEquals(vendingMachine.getCentsInInventory(),zeroCents);
+        assertNotEquals(nonAdminVendingMachine.getCentsInInventory(),zeroCents);
     }
     @Test
     public void testUsers(){

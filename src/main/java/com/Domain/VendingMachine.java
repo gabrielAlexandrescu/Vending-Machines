@@ -1,7 +1,7 @@
+package com.Domain;
 
 import java.io.*;
 import java.util.*;
-
 import com.utils.Utils;
 
 public class VendingMachine {
@@ -25,6 +25,14 @@ public class VendingMachine {
         centsInInventory = Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         centsAddedByUser = Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         change = Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+
+    public LinkedHashMap<Product, Integer> getProductsInInventory() {
+        return productsInInventory;
+    }
+
+    public LinkedHashMap<String, Integer> getCentsInInventory() {
+        return centsInInventory;
     }
 
     public boolean giveChange(int cents) {
@@ -58,7 +66,6 @@ public class VendingMachine {
     private boolean checkIfChangePossible(int cents) {
         for (Map.Entry<String, Integer> entry : centsInInventory.entrySet()) {
             if (Integer.parseInt(entry.getKey()) > 500 && !canTakeBills) {
-                continue;
             } else {
                 int maxCoin = Integer.parseInt(entry.getKey());
                 while (cents >= maxCoin && entry.getValue() > 0) {
