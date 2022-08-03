@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class VendingMachineTests {
     private final VendingMachine vendingMachine = new VendingMachine(new Admin("Test","nuj"),true);
-    private VendingMachine nonAdminvendingMachine = new VendingMachine(new User("Test"),true);
+    private final VendingMachine nonAdminVendingMachine = new VendingMachine(new User("Test"),true);
     @Test
     public void testChange(){
-        LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
+        LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(0,0,0,1,1,2,3,0,12,10,0);
         vendingMachine.loadMoney(cents);
         assertTrue(vendingMachine.giveChange(100));
@@ -23,7 +23,7 @@ public class VendingMachineTests {
     }
     @Test
     public void testBuy() throws IOException {
-        LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
+        LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(0,0,0,0,1,2,3,0,12,10,0);
         vendingMachine.loadMoney(cents);
         Product p1 = new Product(3.5,"D12",null);
@@ -60,9 +60,6 @@ public class VendingMachineTests {
         Product p1 = new Product(12.5,"D12",null);
         Product p2 = new Product(1,"E2",null);
         Product p3 = new Product(2.5,"A1",null);
-        Product p4 = new Product(5.3,"F8",null);
-        Product p5 = new Product(7.2,"D5",null);
-        Product p6 = new Product(8.9,"C9",null);
         vendingMachine.loadProduct(p1);
         vendingMachine.loadProduct(p2);
         vendingMachine.loadProduct(p3);
@@ -74,25 +71,24 @@ public class VendingMachineTests {
     }
     @Test
     public void testLoadingMoney(){
-        LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
+        LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(1,1,10,1,1,2,3,1,12,10,1);
         vendingMachine.loadMoney(cents);
-        nonAdminvendingMachine.setCentsInInventory(cents);
+        nonAdminVendingMachine.setCentsInInventory(cents);
         vendingMachine.unloadMoney();
-        nonAdminvendingMachine.unloadMoney();
+        nonAdminVendingMachine.unloadMoney();
         assertFalse(vendingMachine.insertMoney(13));
-        LinkedHashMap<String,Integer> zeroCents = new LinkedHashMap<>();
+        LinkedHashMap<String,Integer> zeroCents;
         zeroCents = Utils.formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
         assertEquals(vendingMachine.centsInInventory,zeroCents);
-        assertNotEquals(nonAdminvendingMachine,zeroCents);
+        assertNotEquals(nonAdminVendingMachine.centsInInventory,zeroCents);
     }
     @Test
     public void testUsers(){
         User user = new User("pablo");
-        Admin admin = new Admin("Leonardo","1q2w3e4r");
-        LinkedHashMap<String,Integer> cents = new LinkedHashMap<String,Integer>();
+        LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(1,1,10,1,1,2,3,2,13,10,1);
-        LinkedHashMap<String,Integer> zeroCents = new LinkedHashMap<>();
+        LinkedHashMap<String,Integer> zeroCents;
         zeroCents = Utils.formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
         vendingMachine.loadMoney(cents);
         user.setUserWallet(cents);
@@ -119,7 +115,7 @@ public class VendingMachineTests {
     @Test
     public void testCancellingTransaction(){
         User user = new User("test");
-        LinkedHashMap<String,Integer> userWallet = new LinkedHashMap<>();
+        LinkedHashMap<String,Integer> userWallet;
         userWallet = Utils.formatHashMap(0,0,0,0,2,1,0,0,0,0,0);
         LinkedHashMap<String,Integer> copyUserWallet = new LinkedHashMap<>(userWallet);
         vendingMachine.login(new Admin("test","test"));
