@@ -167,7 +167,7 @@ public class VendingMachineTests {
         vendingMachine.loadProduct(new Product(9.85,"A2","Tigari cu foi"));
         vendingMachine.loadProduct(new Product(2.1,"F3","Tigari"));
         vendingMachine.loadProduct(new Product(2.1,"F3","Tigari"));
-        vendingMachine.setUser(user);
+        vendingMachine.login(user);
         vendingMachine.setCentsAddedByUser(cents);
         vendingMachine.buyProduct("D12",false);
         vendingMachine.buyProduct("E12",false);

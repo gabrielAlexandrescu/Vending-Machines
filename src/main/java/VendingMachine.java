@@ -241,7 +241,7 @@ public class VendingMachine {
         return user;
     }
 
-    public void setUser(User user) {
+    public void login(User user) {
         this.user = user;
     }
 
