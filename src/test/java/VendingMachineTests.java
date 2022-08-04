@@ -1,4 +1,5 @@
-import com.Domain.*;
+import com.domain.*;
+import com.exceptions.*;
 import com.utils.Utils;
 import org.junit.jupiter.api.Test;
 
@@ -13,19 +14,21 @@ public class VendingMachineTests {
 
 
     @Test
-    public void testChange(){
+    public void testChange() throws NoAdminPrivileges, NotEnoughMoney {
         LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(0,0,0,1,1,2,3,0,12,10,0);
         vendingMachine.loadMoney(cents);
         assertTrue(vendingMachine.giveChange(100));
-        assertFalse(vendingMachine.giveChange(101));
+        Exception exception = assertThrows(NotEnoughMoney.class,()->vendingMachine.giveChange(101));
+        assertSame("Not enough money in inventory for giving change!", exception.getMessage());
         assertTrue(vendingMachine.giveChange(355));
-        assertFalse(vendingMachine.giveChange(1));
+        Exception secondException = assertThrows(NotEnoughMoney.class,()->vendingMachine.giveChange(1));
+        assertSame("Not enough money in inventory for giving change!",secondException.getMessage());
         assertTrue(vendingMachine.giveChange(90));
         assertTrue(vendingMachine.giveChange(500));
     }
     @Test
-    public void testBuy() throws IOException {
+    public void testBuy() throws IOException, ProductNotFound, TooManyProducts, NotEnoughMoney, InvalidCurrency, NoAdminPrivileges {
         LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(0,0,0,0,1,2,3,0,12,10,0);
         vendingMachine.loadMoney(cents);
@@ -49,8 +52,8 @@ public class VendingMachineTests {
         vendingMachine.insertMoney(200);
         vendingMachine.insertMoney(100);
         assertTrue(vendingMachine.buyProduct(p2.getCode(),false));
-        assertFalse(vendingMachine.buyProduct(p3.getCode(), false));
-        assertFalse(vendingMachine.buyProduct(null, false));
+        assertThrows(NotEnoughMoney.class,()->vendingMachine.buyProduct(p3.getCode(), false));
+        assertThrows(ProductNotFound.class,()->vendingMachine.buyProduct(null, false));
         vendingMachine.insertMoney(1000);
         vendingMachine.insertMoney(200);
         vendingMachine.insertMoney(50);
@@ -59,7 +62,7 @@ public class VendingMachineTests {
         vendingMachine.getStatus();
     }
     @Test
-    public void testLoadingProducts(){
+    public void testLoadingProducts() throws TooManyProducts, ProductNotFound, NoAdminPrivileges {
         Product p1 = new Product(12.5,"D12",null);
         Product p2 = new Product(1,"E2",null);
         Product p3 = new Product(2.5,"A1",null);
@@ -73,21 +76,21 @@ public class VendingMachineTests {
         assertTrue(vendingMachine.getProductsInInventory().containsKey(p1));
     }
     @Test
-    public void testLoadingMoney(){
+    public void testLoadingMoney() throws NoAdminPrivileges {
         LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(1,1,10,1,1,2,3,1,12,10,1);
         vendingMachine.loadMoney(cents);
         nonAdminVendingMachine.setCentsInInventory(cents);
         vendingMachine.unloadMoney();
-        nonAdminVendingMachine.unloadMoney();
-        assertFalse(vendingMachine.insertMoney(13));
+        assertThrows(NoAdminPrivileges.class, nonAdminVendingMachine::unloadMoney);
+        assertThrows(InvalidCurrency.class,()->vendingMachine.insertMoney(13));
         LinkedHashMap<String,Integer> zeroCents;
         zeroCents = Utils.formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
         assertEquals(vendingMachine.getCentsInInventory(),zeroCents);
         assertNotEquals(nonAdminVendingMachine.getCentsInInventory(),zeroCents);
     }
     @Test
-    public void testUsers(){
+    public void testUsers() throws ProductNotFound, TooManyProducts, NotEnoughMoney, NoAdminPrivileges {
         User user = new User("pablo");
         LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(1,1,10,1,1,2,3,2,13,10,1);
@@ -116,7 +119,7 @@ public class VendingMachineTests {
         assertEquals(user.getTransactions(),userTransactions);
     }
     @Test
-    public void testCancellingTransaction(){
+    public void testCancellingTransaction() throws InvalidCurrency, NoAdminPrivileges {
         User user = new User("test");
         LinkedHashMap<String,Integer> userWallet;
         userWallet = Utils.formatHashMap(0,0,0,0,2,1,0,0,0,0,0);
@@ -129,6 +132,5 @@ public class VendingMachineTests {
         vendingMachine.insertMoney(100);
         vendingMachine.cancelTransaction();
         assertEquals(userWallet,copyUserWallet);
-
     }
 }

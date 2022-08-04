@@ -1,6 +1,4 @@
-package com.Domain;
-
-import com.Domain.VendingMachine;
+package com.domain;
 
 public class VendingMachineUI {
     private VendingMachine vendingMachine;
