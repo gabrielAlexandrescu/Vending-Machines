@@ -93,7 +93,7 @@ public class VendingMachineTests {
     public void testUsers() throws ProductNotFound, TooManyProducts, NotEnoughMoney, NoAdminPrivileges {
         User user = new User("pablo");
         LinkedHashMap<String,Integer> cents;
-        cents = Utils.formatHashMap(1,1,10,1,1,2,3,2,13,10,1);
+        cents = Utils.formatHashMap(1,1,10,1,1,3,4,2,14,10,1);
         LinkedHashMap<String,Integer> zeroCents;
         zeroCents = Utils.formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
         vendingMachine.loadMoney(cents);

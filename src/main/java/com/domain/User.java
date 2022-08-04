@@ -29,7 +29,7 @@ public class User{
         this.userWallet.put(String.valueOf(cents),userWallet.get(String.valueOf(cents))-amount);
     }
     public void setUserWallet(LinkedHashMap<String, Integer> userWallet) {
-        this.userWallet = userWallet;
+        this.userWallet.putAll(userWallet);
     }
     public boolean isAdmin(){
         return false;

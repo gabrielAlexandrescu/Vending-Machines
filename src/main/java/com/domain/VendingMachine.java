@@ -14,7 +14,6 @@ public class VendingMachine {
     protected LinkedHashMap<Product, Integer> productsInInventory;
     protected LinkedHashMap<String, Integer> centsAddedByUser;
     protected LinkedHashMap<String, Integer> change;
-    protected LinkedHashMap<String, Integer> centsUsedToBuyProduct;
 
     public VendingMachine(User user, boolean canTakeBills) {
         this.user = user;
@@ -23,7 +22,6 @@ public class VendingMachine {
         this.productsInInventory = new LinkedHashMap<>();
         this.centsAddedByUser = new LinkedHashMap<>();
         this.change = new LinkedHashMap<>();
-        this.centsUsedToBuyProduct = new LinkedHashMap<>();
         centsInInventory.putAll(Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
         centsAddedByUser.putAll(Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
         change.putAll(Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
@@ -60,8 +58,7 @@ public class VendingMachine {
                 entry.setValue(value + entry.getValue());
                 change.put(entry.getKey(), 0);
             }
-            //throw new NotEnoughMoney("Not enough money in inventory for giving change!");
-            return false;
+            throw new NotEnoughMoney("Not enough money in inventory for giving change!");
         }
     }
 
@@ -80,17 +77,15 @@ public class VendingMachine {
         return cents == 0;
     }
 
-    public boolean insertMoney(int cents) throws InvalidCurrency {
+    public void insertMoney(int cents) throws InvalidCurrency {
         if (cents == 1 || cents == 5 || cents == 10 || cents == 20 || cents == 50 || cents == 100 || cents == 200) {
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             user.removeCoinsFromWallet(cents, 1);
-            return true;
         } else if (canTakeBills && ((cents == 500) || (cents) == 1000 || (cents == 2000) || (cents == 5000))) {
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             user.removeCoinsFromWallet(cents, 1);
-            return true;
         }
-        throw new InvalidCurrency();
+        else throw new InvalidCurrency();
     }
 
     public void buyMoreProducts(Product product) throws NotEnoughMoney {
@@ -101,6 +96,7 @@ public class VendingMachine {
                 centsAddedByUser.put(cents, centsAddedByUser.get(cents) - 1);
                 entry.setValue(entry.getValue() + 1);
                 price -= Integer.parseInt(entry.getKey());
+                user.removeCoinsFromWallet(Integer.parseInt(cents),1);
             }
         }
         if (price < 0)
@@ -139,6 +135,8 @@ public class VendingMachine {
                     if (!last) {
                         buyMoreProducts(entry.getKey());
                     } else {
+                        for(Map.Entry<String, Integer> secondEntry : centsAddedByUser.entrySet())
+                            user.removeCoinsFromWallet(Integer.parseInt(secondEntry.getKey()), secondEntry.getValue());
                         addCentsToInventory();
                         giveChange((int) (cents - (entry.getKey().getPrice() * 100)));
                     }
@@ -215,10 +213,10 @@ public class VendingMachine {
 
 
     public void setCentsInInventory(LinkedHashMap<String, Integer> centsInInventory) {
-        this.centsInInventory = centsInInventory;
+        this.centsInInventory.putAll(centsInInventory);
     }
 
     public void setCentsAddedByUser(LinkedHashMap<String, Integer> centsAddedByUser) {
-        this.centsAddedByUser = centsAddedByUser;
+        this.centsAddedByUser.putAll(centsAddedByUser);
     }
 }
