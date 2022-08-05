@@ -11,6 +11,5 @@ Current cents and bills in inventory:
 5 cents: 11
 1 cents: 0
 
-Product{price=3.5, code='D12'}: 1
-Product{price=12.55, code='E1'}: 0
-Product{price=6.54, code='A20'}: 1
+Coke is in row D12, costs 3.5 and there are : 1 products 
+Nuj is in row A20, costs 6.54 and there are : 1 products 

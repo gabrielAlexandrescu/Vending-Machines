@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,9 +33,9 @@ public class VendingMachineTests {
         LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(0,0,0,0,1,2,3,0,12,10,0);
         vendingMachine.loadMoney(cents);
-        Product p1 = new Product(3.5,"D12",null);
-        Product p2= new Product(12.55,"E1",null);
-        Product p3 = new Product(6.54,"A20",null);
+        Product p1 = new Product(3.5,"D12","Coke");
+        Product p2= new Product(12.55,"E1","Cigar");
+        Product p3 = new Product(6.54,"A20","Nuj");
         vendingMachine.loadProduct(p1);
         vendingMachine.loadProduct(p1);
         vendingMachine.loadProduct(p2);
@@ -132,5 +133,6 @@ public class VendingMachineTests {
         vendingMachine.insertMoney(100);
         vendingMachine.cancelTransaction();
         assertEquals(userWallet,copyUserWallet);
+
     }
 }

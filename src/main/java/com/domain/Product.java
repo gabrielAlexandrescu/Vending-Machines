@@ -33,10 +33,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "price=" + price +
-                ", code='" + code + '\'' +
-                '}';
+        return name+" is in row "+ code+", costs "+price+" and there are ";
     }
 
     @Override

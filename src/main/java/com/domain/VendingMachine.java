@@ -1,8 +1,6 @@
 package com.domain;
-
 import java.io.*;
 import java.util.*;
-
 import com.exceptions.*;
 import com.utils.Utils;
 
@@ -101,11 +99,13 @@ public class VendingMachine {
         }
         if (price < 0)
             throw new NotEnoughMoney("Not enough money in inventory when user tried to buy more products!");
-
+        // de adaugat limita la bani+ functie de a lua profit + tinut istoric cumparari intr un fisier cv
+        // de adaugat la buyProduct null la user dupa ce se termina tranzactia; la logIn daca e null se poate loga celalalt
     }
 
     public void getStatus() throws IOException {
-        FileWriter fw = new FileWriter("output.txt");
+        File file = new File("src/main/resources/output.txt");
+        FileWriter fw = new FileWriter(file);
         BufferedWriter bw = new BufferedWriter(fw);
         bw.write("Current cents and bills in inventory:\n");
         bw.write("50 euros: " + centsInInventory.get("5000") + "\n");
@@ -120,7 +120,7 @@ public class VendingMachine {
         bw.write("5 cents: " + centsInInventory.get("5") + "\n");
         bw.write("1 cents: " + centsInInventory.get("1") + "\n\n");
         for (Map.Entry<Product, Integer> entry : productsInInventory.entrySet())
-            bw.write(entry.getKey().toString() + ": " + entry.getValue() + "\n");
+            bw.write(entry.getKey().toString() + ": " + entry.getValue() + " products \n");
         bw.close();
     }
 
@@ -142,6 +142,8 @@ public class VendingMachine {
                     }
                     System.out.println("Item " + entry.getKey().getCode() + " has been bought");
                     user.addTransaction(entry.getKey().getName());
+                    if(entry.getValue() == 0)
+                        productsInInventory.remove(entry.getKey());
                     return true;
                 } else {
                     throw new NotEnoughMoney();
