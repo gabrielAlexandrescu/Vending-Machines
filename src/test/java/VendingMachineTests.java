@@ -2,17 +2,16 @@ import com.domain.*;
 import com.exceptions.*;
 import com.utils.Utils;
 import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.Scanner;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VendingMachineTests {
     private final VendingMachine vendingMachine = new VendingMachine(new Admin("Test","nuj"),true);
     private final VendingMachine nonAdminVendingMachine = new VendingMachine(new User("Test"),true);
-
+    private final SnacksVendingMachine snacksVendingMachine = new SnacksVendingMachine(new Admin("Test","nuj"));
+    private final SodasVendingMachine sodasVendingMachine = new SodasVendingMachine(new Admin("Test","nuj"));
+    private final UtilitiesVendingMachine utilitiesVendingMachine = new UtilitiesVendingMachine(new Admin("Test","nuj"));
 
     @Test
     public void testChange() throws NoAdminPrivileges, NotEnoughMoney {
@@ -29,7 +28,7 @@ public class VendingMachineTests {
         assertTrue(vendingMachine.giveChange(500));
     }
     @Test
-    public void testBuy() throws IOException, ProductNotFound, TooManyProducts, NotEnoughMoney, InvalidCurrency, NoAdminPrivileges {
+    public void testBuy() throws IOException, ProductNotFound, TooManyProducts, NotEnoughMoney, InvalidCurrency, NoAdminPrivileges, InvalidProductType {
         LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(0,0,0,0,1,2,3,0,12,10,0);
         vendingMachine.loadMoney(cents);
@@ -63,7 +62,7 @@ public class VendingMachineTests {
         vendingMachine.getStatus();
     }
     @Test
-    public void testLoadingProducts() throws TooManyProducts, ProductNotFound, NoAdminPrivileges {
+    public void testLoadingProducts() throws TooManyProducts, ProductNotFound, NoAdminPrivileges, InvalidProductType {
         Product p1 = new Product(12.5,"D12",null);
         Product p2 = new Product(1,"E2",null);
         Product p3 = new Product(2.5,"A1",null);
@@ -91,7 +90,7 @@ public class VendingMachineTests {
         assertNotEquals(nonAdminVendingMachine.getCentsInInventory(),zeroCents);
     }
     @Test
-    public void testUsers() throws ProductNotFound, TooManyProducts, NotEnoughMoney, NoAdminPrivileges {
+    public void testUsers() throws ProductNotFound, TooManyProducts, NotEnoughMoney, NoAdminPrivileges, InvalidProductType {
         User user = new User("pablo");
         LinkedHashMap<String,Integer> cents;
         cents = Utils.formatHashMap(1,1,10,1,1,3,4,2,14,10,1);
@@ -133,6 +132,15 @@ public class VendingMachineTests {
         vendingMachine.insertMoney(100);
         vendingMachine.cancelTransaction();
         assertEquals(userWallet,copyUserWallet);
-
+    }
+    @Test
+    public void testProductTypes() throws InvalidProductType, NoAdminPrivileges, TooManyProducts {
+        Product p1 = new Product(2.5,"D12","Coke");
+        Exception exception = assertThrows(InvalidProductType.class,()->snacksVendingMachine.loadProduct(p1));
+        assertEquals("Invalid product type! Type snack was expected!",exception.getMessage());
+        sodasVendingMachine.loadProduct(p1);
+        assertEquals(1, sodasVendingMachine.getProductsInInventory().size());
+        Exception secondException = assertThrows(InvalidProductType.class,()->utilitiesVendingMachine.loadProduct(p1));
+        assertEquals("Invalid product type! Type utility was expected!",secondException.getMessage());
     }
 }

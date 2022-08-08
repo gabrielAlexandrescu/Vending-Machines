@@ -1,0 +1,15 @@
+Current cents and bills in inventory:
+50 euros: 0
+20 euros: 0
+10 euros: 1
+5 euros: 0
+2 euros: 9
+1 euros: 3
+50 cents: 5
+20 cents: 0
+10 cents: 12
+5 cents: 11
+1 cents: 0
+
+Coke is in row D12, costs 3.5 and there are : 1 products 
+Nuj is in row A20, costs 6.54 and there are : 1 products 

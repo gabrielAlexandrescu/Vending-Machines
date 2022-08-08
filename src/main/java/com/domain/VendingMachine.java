@@ -1,12 +1,14 @@
 package com.domain;
+
 import java.io.*;
 import java.util.*;
+
 import com.exceptions.*;
 import com.utils.Utils;
 
 public class VendingMachine {
-    private User user;
-    boolean canTakeBills;
+    protected User user;
+    protected boolean canTakeBills;
 
     protected LinkedHashMap<String, Integer> centsInInventory;
     protected LinkedHashMap<Product, Integer> productsInInventory;
@@ -62,8 +64,7 @@ public class VendingMachine {
 
     private boolean checkIfChangePossible(int cents) {
         for (Map.Entry<String, Integer> entry : centsInInventory.entrySet()) {
-            if (Integer.parseInt(entry.getKey()) > 500 && !canTakeBills) {
-            } else {
+            if (!(Integer.parseInt(entry.getKey()) > 500 && !canTakeBills)) {
                 int maxCoin = Integer.parseInt(entry.getKey());
                 while (cents >= maxCoin && entry.getValue() > 0) {
                     change.put(String.valueOf(maxCoin), change.get(String.valueOf(maxCoin)) + 1);
@@ -82,8 +83,7 @@ public class VendingMachine {
         } else if (canTakeBills && ((cents == 500) || (cents) == 1000 || (cents == 2000) || (cents == 5000))) {
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             user.removeCoinsFromWallet(cents, 1);
-        }
-        else throw new InvalidCurrency();
+        } else throw new InvalidCurrency();
     }
 
     public void buyMoreProducts(Product product) throws NotEnoughMoney {
@@ -94,13 +94,16 @@ public class VendingMachine {
                 centsAddedByUser.put(cents, centsAddedByUser.get(cents) - 1);
                 entry.setValue(entry.getValue() + 1);
                 price -= Integer.parseInt(entry.getKey());
-                user.removeCoinsFromWallet(Integer.parseInt(cents),1);
+                user.removeCoinsFromWallet(Integer.parseInt(cents), 1);
             }
         }
         if (price < 0)
             throw new NotEnoughMoney("Not enough money in inventory when user tried to buy more products!");
-        // de adaugat limita la bani+ functie de a lua profit + tinut istoric cumparari intr un fisier cv
+        // de adaugat limita la bani + functie de a lua profit + tinut istoric cumparari intr un fisier cv
         // de adaugat la buyProduct null la user dupa ce se termina tranzactia; la logIn daca e null se poate loga celalalt
+        //de facut istoric cu logger
+        // de facut tranzactia cu datetime
+        // de facut user-friendly + override la restu de VMs
     }
 
     public void getStatus() throws IOException {
@@ -135,14 +138,14 @@ public class VendingMachine {
                     if (!last) {
                         buyMoreProducts(entry.getKey());
                     } else {
-                        for(Map.Entry<String, Integer> secondEntry : centsAddedByUser.entrySet())
+                        for (Map.Entry<String, Integer> secondEntry : centsAddedByUser.entrySet())
                             user.removeCoinsFromWallet(Integer.parseInt(secondEntry.getKey()), secondEntry.getValue());
                         addCentsToInventory();
                         giveChange((int) (cents - (entry.getKey().getPrice() * 100)));
                     }
                     System.out.println("Item " + entry.getKey().getCode() + " has been bought");
                     user.addTransaction(entry.getKey().getName());
-                    if(entry.getValue() == 0)
+                    if (entry.getValue() == 0)
                         productsInInventory.remove(entry.getKey());
                     return true;
                 } else {
@@ -160,7 +163,7 @@ public class VendingMachine {
         }
     }
 
-    public void loadProduct(Product product) throws TooManyProducts, NoAdminPrivileges {
+    public void loadProduct(Product product) throws TooManyProducts, NoAdminPrivileges, InvalidProductType {
         if (user.isAdmin()) {
             if (!productsInInventory.containsKey(product)) {
                 productsInInventory.put(product, 0);
@@ -192,7 +195,6 @@ public class VendingMachine {
             else productsInInventory.put(product, productsInInventory.get(product) - 1);
         }
     }
-
     public void unloadMoney() throws NoAdminPrivileges {
         if (user.isAdmin()) {
             LinkedHashMap<String, Integer> zeroCents;
