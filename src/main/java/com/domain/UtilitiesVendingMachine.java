@@ -5,8 +5,8 @@ import com.exceptions.TooManyProducts;
 import com.product_types.Utilities;
 
 public class UtilitiesVendingMachine extends  VendingMachine{
-    public UtilitiesVendingMachine(User user) {
-        super(user,true);
+    public UtilitiesVendingMachine(Admin admin) {
+        super(admin,true);
     }
     @Override
     public void loadProduct(Product product) throws TooManyProducts, NoAdminPrivileges, InvalidProductType {

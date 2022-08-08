@@ -2,6 +2,7 @@ package com.domain;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 import com.exceptions.*;
 import com.utils.Utils;
@@ -9,14 +10,16 @@ import com.utils.Utils;
 public class VendingMachine {
     protected User user;
     protected boolean canTakeBills;
-
+    protected final Admin admin;
     protected LinkedHashMap<String, Integer> centsInInventory;
     protected LinkedHashMap<Product, Integer> productsInInventory;
     protected LinkedHashMap<String, Integer> centsAddedByUser;
     protected LinkedHashMap<String, Integer> change;
+    protected final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
-    public VendingMachine(User user, boolean canTakeBills) {
-        this.user = user;
+    public VendingMachine(Admin admin, boolean canTakeBills) {
+        this.user = null;
+        this.admin = admin;
         this.canTakeBills = canTakeBills;
         this.centsInInventory = new LinkedHashMap<>();
         this.productsInInventory = new LinkedHashMap<>();
@@ -76,14 +79,26 @@ public class VendingMachine {
         return cents == 0;
     }
 
-    public void insertMoney(int cents) throws InvalidCurrency {
+    public void insertMoney(int cents) throws InvalidCurrency, TooMuchMoney {
+        try {
+            if (centsInInventory.get(String.valueOf(cents)) >= 100) {
+                cancelTransaction();
+                if (cents > 200 && canTakeBills) {
+                    throw new TooMuchMoney("The machine has too many bills of " + cents / 100);
+                }
+                throw new TooMuchMoney("The machine has too many coins of " + cents + " cents");
+            }
+        } catch (NullPointerException e) {
+            throw new InvalidCurrency();
+        }
         if (cents == 1 || cents == 5 || cents == 10 || cents == 20 || cents == 50 || cents == 100 || cents == 200) {
+
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             user.removeCoinsFromWallet(cents, 1);
         } else if (canTakeBills && ((cents == 500) || (cents) == 1000 || (cents == 2000) || (cents == 5000))) {
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             user.removeCoinsFromWallet(cents, 1);
-        } else throw new InvalidCurrency();
+        }
     }
 
     public void buyMoreProducts(Product product) throws NotEnoughMoney {
@@ -99,11 +114,9 @@ public class VendingMachine {
         }
         if (price < 0)
             throw new NotEnoughMoney("Not enough money in inventory when user tried to buy more products!");
-        // de adaugat limita la bani + functie de a lua profit + tinut istoric cumparari intr un fisier cv
-        // de adaugat la buyProduct null la user dupa ce se termina tranzactia; la logIn daca e null se poate loga celalalt
-        //de facut istoric cu logger
-        // de facut tranzactia cu datetime
-        // de facut user-friendly + override la restu de VMs
+        // functie de a lua profit(de vazut cum ar functiona sistemul)
+        // de facut istoric cu logger
+        // de facut tranzactia cu datetime (trebuie db sau fisier)
     }
 
     public void getStatus() throws IOException {
@@ -111,19 +124,33 @@ public class VendingMachine {
         FileWriter fw = new FileWriter(file);
         BufferedWriter bw = new BufferedWriter(fw);
         bw.write("Current cents and bills in inventory:\n");
-        bw.write("50 euros: " + centsInInventory.get("5000") + "\n");
-        bw.write("20 euros: " + centsInInventory.get("2000") + "\n");
-        bw.write("10 euros: " + centsInInventory.get("1000") + "\n");
-        bw.write("5 euros: " + centsInInventory.get("500") + "\n");
-        bw.write("2 euros: " + centsInInventory.get("200") + "\n");
-        bw.write("1 euros: " + centsInInventory.get("100") + "\n");
-        bw.write("50 cents: " + centsInInventory.get("50") + "\n");
-        bw.write("20 cents: " + centsInInventory.get("20") + "\n");
-        bw.write("10 cents: " + centsInInventory.get("10") + "\n");
-        bw.write("5 cents: " + centsInInventory.get("5") + "\n");
-        bw.write("1 cents: " + centsInInventory.get("1") + "\n\n");
-        for (Map.Entry<Product, Integer> entry : productsInInventory.entrySet())
-            bw.write(entry.getKey().toString() + ": " + entry.getValue() + " products \n");
+        bw.write("  -------------\n");
+        bw.write("  50 euros -> " + centsInInventory.get("5000") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  20 euros -> " + centsInInventory.get("2000") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  10 euros -> " + centsInInventory.get("1000") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  5 euros -> " + centsInInventory.get("500") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  2 euros -> " + centsInInventory.get("200") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  1 euro -> " + centsInInventory.get("100") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  50 cents -> " + centsInInventory.get("50") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  20 cents -> " + centsInInventory.get("20") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  10 cents -> " + centsInInventory.get("10") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  5 cents -> " + centsInInventory.get("5") + "\n");
+        bw.write("  -------------\n");
+        bw.write("  1 cents -> " + centsInInventory.get("1") + "\n");
+        bw.write("  -------------------------------------------------------\n");
+        for (Map.Entry<Product, Integer> entry : productsInInventory.entrySet()) {
+            bw.write("  " + entry.getKey().toString() + entry.getValue() + " products \n");
+            bw.write("  -------------------------------------------------------\n");
+        }
         bw.close();
     }
 
@@ -178,10 +205,19 @@ public class VendingMachine {
         }
     }
 
-    public void loadMoney(LinkedHashMap<String, Integer> cents) throws NoAdminPrivileges {
-        if (user.isAdmin())
+    public void loadMoney(LinkedHashMap<String, Integer> cents) throws NoAdminPrivileges, TooMuchMoney {
+        if (user.isAdmin()) {
+            for (String key : centsInInventory.keySet()) {
+                if (centsInInventory.get(key) >= 100) {
+                    if (Integer.parseInt(key) >= 200 && canTakeBills)
+                        throw new TooMuchMoney("The machine is full of " + key + " euros bills!");
+                    else {
+                        throw new TooMuchMoney("The machine is full of " + key + " cents coins!");
+                    }
+                }
+            }
             setCentsInInventory(cents);
-        else throw new NoAdminPrivileges("Loading money unsuccesful!");
+        } else throw new NoAdminPrivileges("Loading money unsuccesful!");
     }
 
     public void unloadProduct(Product product) throws ProductNotFound, NoAdminPrivileges {
@@ -195,10 +231,13 @@ public class VendingMachine {
             else productsInInventory.put(product, productsInInventory.get(product) - 1);
         }
     }
+
     public void unloadMoney() throws NoAdminPrivileges {
         if (user.isAdmin()) {
             LinkedHashMap<String, Integer> zeroCents;
             zeroCents = Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            for (String key : centsInInventory.keySet())
+                user.addCoinsToWallet(Integer.parseInt(key), centsInInventory.get(key));
             setCentsInInventory(zeroCents);
         } else throw new NoAdminPrivileges("Unloading money unsuccesful");
     }
@@ -211,8 +250,20 @@ public class VendingMachine {
     }
 
 
-    public void login(User user) {
-        this.user = user;
+    public void login(User user) throws InvalidCredentials {
+        if (this.user == null)
+            this.user = user;
+        else {
+            System.out.println("Wait for the previous user to finish!");
+        }
+        if (user == null)
+            throw new InvalidCredentials("Credentials cannot be empty!");
+    }
+
+    public void logOut() throws NoAdminPrivileges {
+        if (user.isAdmin())
+            user = null;
+        else throw new NoAdminPrivileges("Users should not be able to manually log out!");
     }
 
 

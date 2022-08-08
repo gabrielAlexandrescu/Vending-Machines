@@ -5,8 +5,8 @@ import com.exceptions.TooManyProducts;
 import com.product_types.Snacks;
 
 public class SnacksVendingMachine extends VendingMachine {
-    public SnacksVendingMachine(User user) {
-        super(user, false);
+    public SnacksVendingMachine(Admin admin) {
+        super(admin, false);
     }
 
     @Override

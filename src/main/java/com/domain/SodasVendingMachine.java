@@ -6,8 +6,8 @@ import com.product_types.Sodas;
 
 
 public class SodasVendingMachine extends  VendingMachine{
-    public SodasVendingMachine(User user) {
-        super(user,false);
+    public SodasVendingMachine(Admin admin) {
+        super(admin,false);
     }
     @Override
     public void loadProduct(Product product) throws TooManyProducts, NoAdminPrivileges, InvalidProductType {
