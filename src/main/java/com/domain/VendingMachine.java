@@ -2,8 +2,8 @@ package com.domain;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.exceptions.*;
 import com.utils.Utils;
 
@@ -39,31 +39,40 @@ public class VendingMachine {
     }
 
     public boolean giveChange(int cents) throws NotEnoughMoney {
-        if (checkIfChangePossible(cents)) {
-            for (Map.Entry<String, Integer> entry : change.entrySet()) {
-                user.addCoinsToWallet(Integer.parseInt(entry.getKey()), entry.getValue());
-                while (entry.getValue() > 0) {
-                    entry.setValue(entry.getValue() - 1);
-                    if (Integer.parseInt(entry.getKey()) < 100) {
-                        System.out.println("A coin of " + entry.getKey() + " eurocents has been returned!");
-                    } else if (Integer.parseInt(entry.getKey()) <= 200) {
-                        System.out.println("A coin of " + Integer.parseInt(entry.getKey()) / 100 + " euros has been returned!");
-                    } else if (canTakeBills) {
-                        System.out.println("A bill of " + Integer.parseInt(entry.getKey()) / 100 + " euros has been returned!");
-                    }
-                }
-            }
-            System.out.println("=======================");
+        if (cents == 0) {
+            logger.log(Level.INFO, "No change needed!\n");
             return true;
         } else {
-            for (Map.Entry<String, Integer> entry : centsInInventory.entrySet()) {
-                int value = change.get(entry.getKey());
-                entry.setValue(value + entry.getValue());
-                change.put(entry.getKey(), 0);
+            if (checkIfChangePossible(cents)) {
+                for (Map.Entry<String, Integer> entry : change.entrySet()) {
+                    user.addCoinsToWallet(Integer.parseInt(entry.getKey()), entry.getValue());
+                    while (entry.getValue() > 0) {
+                        entry.setValue(entry.getValue() - 1);
+                        if (Integer.parseInt(entry.getKey()) < 100) {
+                            logger.log(Level.INFO, "A coin of " + entry.getKey() + " eurocents has been returned!\n");
+                        } else if (Integer.parseInt(entry.getKey()) <= 200) {
+                            logger.log(Level.INFO, "A coin of " + Integer.parseInt(entry.getKey()) / 100 + " euros has been returned!\n");
+                        } else if (canTakeBills) {
+                            logger.log(Level.INFO, "A bill of " + Integer.parseInt(entry.getKey()) / 100 + " euros has been returned!\n");
+                        }
+                    }
+                }
+                logger.log(Level.INFO, "Change was given\n");
+                return true;
+            } else {
+                for (Map.Entry<String, Integer> entry : centsInInventory.entrySet()) {
+                    int value = change.get(entry.getKey());
+                    entry.setValue(value + entry.getValue());
+                    change.put(entry.getKey(), 0);
+                }
+                logger.log(Level.SEVERE,"Error",new NotEnoughMoney("Not enough money in inventory for giving change"));
+                throw new NotEnoughMoney("Not enough money in inventory for giving change!");
             }
-            throw new NotEnoughMoney("Not enough money in inventory for giving change!");
         }
     }
+
+
+
 
     private boolean checkIfChangePossible(int cents) {
         for (Map.Entry<String, Integer> entry : centsInInventory.entrySet()) {
@@ -84,20 +93,24 @@ public class VendingMachine {
             if (centsInInventory.get(String.valueOf(cents)) >= 100) {
                 cancelTransaction();
                 if (cents > 200 && canTakeBills) {
+                    logger.log(Level.SEVERE,"Error: ",new TooMuchMoney("The machine has too many bills of " + cents / 100));
                     throw new TooMuchMoney("The machine has too many bills of " + cents / 100);
                 }
+                logger.log(Level.SEVERE,"Error: ",new TooMuchMoney("The machine has too many coins of " + cents + " cents"));
                 throw new TooMuchMoney("The machine has too many coins of " + cents + " cents");
             }
         } catch (NullPointerException e) {
+            logger.log(Level.SEVERE,"Error: ",new InvalidCurrency());
             throw new InvalidCurrency();
         }
         if (cents == 1 || cents == 5 || cents == 10 || cents == 20 || cents == 50 || cents == 100 || cents == 200) {
-
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             user.removeCoinsFromWallet(cents, 1);
+            logger.log(Level.INFO,"User "+ user.getUserName()+" added "+cents+" eurocents");
         } else if (canTakeBills && ((cents == 500) || (cents) == 1000 || (cents == 2000) || (cents == 5000))) {
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             user.removeCoinsFromWallet(cents, 1);
+            logger.log(Level.INFO,"User "+ user.getUserName()+" added "+cents+" euros");
         }
     }
 
@@ -114,16 +127,14 @@ public class VendingMachine {
         }
         if (price < 0)
             throw new NotEnoughMoney("Not enough money in inventory when user tried to buy more products!");
-        // functie de a lua profit(de vazut cum ar functiona sistemul)
-        // de facut istoric cu logger
-        // de facut tranzactia cu datetime (trebuie db sau fisier)
+        // de implementat testul custom
     }
 
     public void getStatus() throws IOException {
         File file = new File("src/main/resources/output.txt");
         FileWriter fw = new FileWriter(file);
         BufferedWriter bw = new BufferedWriter(fw);
-        bw.write("Current cents and bills in inventory:\n");
+        bw.write("  Current cents and bills in inventory:\n");
         bw.write("  -------------\n");
         bw.write("  50 euros -> " + centsInInventory.get("5000") + "\n");
         bw.write("  -------------\n");
@@ -152,6 +163,7 @@ public class VendingMachine {
             bw.write("  -------------------------------------------------------\n");
         }
         bw.close();
+        logger.log(Level.INFO,"Output machine status in txt file");
     }
 
     public boolean buyProduct(String code, boolean last) throws ProductNotFound, NotEnoughMoney {
@@ -170,7 +182,7 @@ public class VendingMachine {
                         addCentsToInventory();
                         giveChange((int) (cents - (entry.getKey().getPrice() * 100)));
                     }
-                    System.out.println("Item " + entry.getKey().getCode() + " has been bought");
+                    logger.log(Level.INFO, "Item " + entry.getKey().getCode() + " has been bought\n");
                     user.addTransaction(entry.getKey().getName());
                     if (entry.getValue() == 0)
                         productsInInventory.remove(entry.getKey());
@@ -195,7 +207,7 @@ public class VendingMachine {
             if (!productsInInventory.containsKey(product)) {
                 productsInInventory.put(product, 0);
             }
-            if (productsInInventory.get(product) == 10) {
+            if (productsInInventory.get(product) == 5) {
                 throw new TooManyProducts();
             } else {
                 productsInInventory.put(product, productsInInventory.get(product) + 1);
@@ -236,10 +248,34 @@ public class VendingMachine {
         if (user.isAdmin()) {
             LinkedHashMap<String, Integer> zeroCents;
             zeroCents = Utils.formatHashMap(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            for (String key : centsInInventory.keySet())
+            for (String key : centsInInventory.keySet()) {
                 user.addCoinsToWallet(Integer.parseInt(key), centsInInventory.get(key));
+            }
             setCentsInInventory(zeroCents);
         } else throw new NoAdminPrivileges("Unloading money unsuccesful");
+    }
+
+    public boolean takeProfits() throws NoAdminPrivileges, NotEnoughMoney {
+        if (user.isAdmin()) {
+            int profits = 0;
+            boolean valid = false;
+            for (String key : centsInInventory.keySet()) {
+                if (centsInInventory.get(key) > 10) {
+                    profits += Integer.parseInt(key) * (centsInInventory.get(key) - 10);
+                    user.addCoinsToWallet(Integer.parseInt(key), centsInInventory.get(key) - 10);
+                    centsInInventory.put(key, 10);
+                    valid = true;
+                }
+            }
+            if (valid) {
+                logger.log(Level.INFO, "The profits have been added to admins wallet. With a total of: " + (double) profits / 100 + " euros\n");
+                return true;
+            } else {
+                throw new NotEnoughMoney("There are no profits!");
+            }
+        } else {
+            throw new NoAdminPrivileges("Only admins can take profit from machine!");
+        }
     }
 
     public void cancelTransaction() {
@@ -254,7 +290,7 @@ public class VendingMachine {
         if (this.user == null)
             this.user = user;
         else {
-            System.out.println("Wait for the previous user to finish!");
+            logger.log(Level.INFO, "Wait for the previous user to finish!\n");
         }
         if (user == null)
             throw new InvalidCredentials("Credentials cannot be empty!");

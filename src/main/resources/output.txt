@@ -1,4 +1,4 @@
-Current cents and bills in inventory:
+  Current cents and bills in inventory:
   -------------
   50 euros -> 0
   -------------

@@ -4,6 +4,9 @@ import com.utils.Utils;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
+
+import static com.domain.VendingMachine.logger;
 
 public class User{
     private String username;
@@ -18,7 +21,8 @@ public class User{
 
     public void addTransaction(String productName){
         if(!transactions.containsKey(productName))
-            this.transactions.put(productName,0);
+        {this.transactions.put(productName,0);
+        logger.log(Level.INFO,"User "+ username+" bought "+productName);}
         this.transactions.put(productName, transactions.get(productName)+1);
     }
 
@@ -41,5 +45,9 @@ public class User{
 
     public HashMap<String, Integer> getTransactions() {
         return transactions;
+    }
+
+    public String getUserName() {
+        return username;
     }
 }

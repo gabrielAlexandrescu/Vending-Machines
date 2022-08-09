@@ -5,5 +5,8 @@ public enum Snacks {
     BAKE_ROLLS,
     MUFFIN,
     SANDWICH,
-    CHOCOLATE_BAR
+    CHOCOLATE_BAR,
+    PEANUTS,
+    CHIPS,
+    SKITTLES
 }
