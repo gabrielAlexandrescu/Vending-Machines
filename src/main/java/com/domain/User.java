@@ -2,28 +2,22 @@ package com.domain;
 
 import com.utils.Utils;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.logging.Level;
-
-import static com.domain.VendingMachine.logger;
-
 public class User{
-    private String username;
-    private HashMap<String,Integer> transactions;
+    private final String username;
+    private final HashMap<String, LocalDateTime> transactions;
     private LinkedHashMap<String,Integer> userWallet;
     public User(String username) {
         this.username = username;
-        this.transactions = new HashMap<String,Integer>();
+        this.transactions = new HashMap<>();
         this.userWallet = new LinkedHashMap<>();
         this.userWallet = Utils.formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
     }
 
-    public void addTransaction(String productName){
-        if(!transactions.containsKey(productName))
-        {this.transactions.put(productName,0);
-        logger.log(Level.INFO,"User "+ username+" bought "+productName);}
-        this.transactions.put(productName, transactions.get(productName)+1);
+    public void addTransaction(Product product){
+        transactions.put(product.getName(),LocalDateTime.now());
     }
 
     public void addCoinsToWallet(int cents,int amount){
@@ -43,7 +37,7 @@ public class User{
         return userWallet;
     }
 
-    public HashMap<String, Integer> getTransactions() {
+    public HashMap<String, LocalDateTime> getTransactions() {
         return transactions;
     }
 

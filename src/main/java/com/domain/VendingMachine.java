@@ -182,8 +182,8 @@ public class VendingMachine {
                         addCentsToInventory();
                         giveChange((int) (cents - (entry.getKey().getPrice() * 100)));
                     }
-                    logger.log(Level.INFO, "Item " + entry.getKey().getCode() + " has been bought\n");
-                    user.addTransaction(entry.getKey().getName());
+                    logger.log(Level.INFO, "Item " + entry.getKey().getCode() + " has been bought by user "+user.getUserName()+"\n");
+                    user.addTransaction(entry.getKey());
                     if (entry.getValue() == 0)
                         productsInInventory.remove(entry.getKey());
                     return true;

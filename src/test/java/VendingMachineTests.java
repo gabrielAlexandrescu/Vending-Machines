@@ -130,7 +130,7 @@ public class VendingMachineTests {
         userTransactions.put("Tigari cu aur", 1);
         userTransactions.put("Tigari cu foi", 1);
         userTransactions.put("Tigari", 2);
-        assertEquals(user.getTransactions(), userTransactions);
+        assertEquals(user.getTransactions().keySet(), userTransactions.keySet());
     }
 
     @Test

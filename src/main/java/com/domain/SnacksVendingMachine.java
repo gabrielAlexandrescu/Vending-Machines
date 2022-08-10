@@ -1,4 +1,5 @@
 package com.domain;
+
 import com.exceptions.InvalidProductType;
 import com.exceptions.NoAdminPrivileges;
 import com.exceptions.TooManyProducts;
@@ -17,12 +18,13 @@ public class SnacksVendingMachine extends VendingMachine {
                 if (!productsInInventory.containsKey(product)) {
                     valid = Snacks.valueOf(product.getName().toUpperCase());
                     productsInInventory.put(product, 0);
-                }
+                } else super.loadProduct(product);
             } else {
                 throw new NoAdminPrivileges("Loading product unsuccesful");
             }
-        } catch (IllegalArgumentException e){
-            throw new InvalidProductType("snack");}
+        } catch (IllegalArgumentException e) {
+            throw new InvalidProductType("snack");
+        }
 
         if (productsInInventory.get(product) == 10) {
             throw new TooManyProducts();

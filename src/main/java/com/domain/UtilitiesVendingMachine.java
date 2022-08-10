@@ -16,7 +16,7 @@ public class UtilitiesVendingMachine extends  VendingMachine{
                 if (!productsInInventory.containsKey(product)) {
                     valid = Utilities.valueOf(product.getName().toUpperCase());
                     productsInInventory.put(product, 0);
-                }
+                } else super.loadProduct(product);
             } else {
                 throw new NoAdminPrivileges("Loading product unsuccesful");
             }

@@ -33,7 +33,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return name+" is in row "+ code+", costs "+price+" and there are ";
+        return name;
     }
 
     @Override

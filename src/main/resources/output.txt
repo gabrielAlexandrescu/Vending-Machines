@@ -22,7 +22,7 @@
   -------------
   1 cents -> 0
   -------------------------------------------------------
-  Coke is in row D12, costs 3.5 and there are 1 products 
+  Coke1 products 
   -------------------------------------------------------
-  Nuj is in row A20, costs 6.54 and there are 1 products 
+  Nuj1 products 
   -------------------------------------------------------
