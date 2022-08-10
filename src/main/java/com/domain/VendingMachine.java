@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import com.exceptions.*;
 import com.utils.Utils;
 
@@ -65,13 +66,11 @@ public class VendingMachine {
                     entry.setValue(value + entry.getValue());
                     change.put(entry.getKey(), 0);
                 }
-                logger.log(Level.SEVERE,"Error",new NotEnoughMoney("Not enough money in inventory for giving change"));
+                logger.log(Level.SEVERE, "Error", new NotEnoughMoney("Not enough money in inventory for giving change"));
                 throw new NotEnoughMoney("Not enough money in inventory for giving change!");
             }
         }
     }
-
-
 
 
     private boolean checkIfChangePossible(int cents) {
@@ -93,24 +92,24 @@ public class VendingMachine {
             if (centsInInventory.get(String.valueOf(cents)) >= 100) {
                 cancelTransaction();
                 if (cents > 200 && canTakeBills) {
-                    logger.log(Level.SEVERE,"Error: ",new TooMuchMoney("The machine has too many bills of " + cents / 100));
+                    logger.log(Level.SEVERE, "Error: ", new TooMuchMoney("The machine has too many bills of " + cents / 100));
                     throw new TooMuchMoney("The machine has too many bills of " + cents / 100);
                 }
-                logger.log(Level.SEVERE,"Error: ",new TooMuchMoney("The machine has too many coins of " + cents + " cents"));
+                logger.log(Level.SEVERE, "Error: ", new TooMuchMoney("The machine has too many coins of " + cents + " cents"));
                 throw new TooMuchMoney("The machine has too many coins of " + cents + " cents");
             }
         } catch (NullPointerException e) {
-            logger.log(Level.SEVERE,"Error: ",new InvalidCurrency());
+            logger.log(Level.SEVERE, "Error: ", new InvalidCurrency());
             throw new InvalidCurrency();
         }
         if (cents == 1 || cents == 5 || cents == 10 || cents == 20 || cents == 50 || cents == 100 || cents == 200) {
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             user.removeCoinsFromWallet(cents, 1);
-            logger.log(Level.INFO,"User "+ user.getUserName()+" added "+cents+" eurocents");
+            logger.log(Level.INFO, "User " + user.getUserName() + " added " + cents + " eurocents");
         } else if (canTakeBills && ((cents == 500) || (cents) == 1000 || (cents == 2000) || (cents == 5000))) {
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             user.removeCoinsFromWallet(cents, 1);
-            logger.log(Level.INFO,"User "+ user.getUserName()+" added "+cents+" euros");
+            logger.log(Level.INFO, "User " + user.getUserName() + " added " + cents + " euros");
         }
     }
 
@@ -163,7 +162,7 @@ public class VendingMachine {
             bw.write("  -------------------------------------------------------\n");
         }
         bw.close();
-        logger.log(Level.INFO,"Output machine status in txt file");
+        logger.log(Level.INFO, "Output machine status in txt file");
     }
 
     public boolean buyProduct(String code, boolean last) throws ProductNotFound, NotEnoughMoney, InvalidCredentials {
@@ -182,9 +181,9 @@ public class VendingMachine {
                         addCentsToInventory();
                         giveChange((int) (cents - (entry.getKey().getPrice() * 100)));
                     }
-                    logger.log(Level.INFO, "Item " + entry.getKey().getCode() + " has been bought by user "+user.getUserName()+"\n");
+                    logger.log(Level.INFO, "Item " + entry.getKey().getCode() + " has been bought by user " + user.getUserName() + "\n");
                     user.addTransaction(entry.getKey());
-                    if(last)
+                    if (last)
                         login(null);
                     if (entry.getValue() == 0)
                         productsInInventory.remove(entry.getKey());
@@ -289,12 +288,11 @@ public class VendingMachine {
 
 
     public void login(User user) throws InvalidCredentials {
-        if (this.user == null)
-            this.user = user;
-        else {
+        if (this.user != null) {
             logger.log(Level.INFO, "Wait for the previous user to finish!\n");
+        } else {
+            this.user = user;
         }
-        this.user = user;
     }
 
     public void logOut() throws NoAdminPrivileges {
