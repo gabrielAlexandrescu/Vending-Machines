@@ -22,12 +22,5 @@ public class UtilitiesVendingMachine extends  VendingMachine{
             }
         } catch (IllegalArgumentException e){
             throw new InvalidProductType("utility");}
-
-        if (productsInInventory.get(product) == 10) {
-            throw new TooManyProducts();
-        } else {
-            productsInInventory.put(product, productsInInventory.get(product) + 1);
-        }
-
     }
 }

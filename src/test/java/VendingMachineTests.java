@@ -175,6 +175,27 @@ public class VendingMachineTests {
     }
 
     @Test
+    public void testUserStatus() throws InvalidCredentials, InvalidProductType, NoAdminPrivileges, TooManyProducts, ProductNotFound, NotEnoughMoney, IOException, TooMuchMoney, InvalidCurrency {
+        User u1 = new User("User1");
+        User u2 = new User("User2");
+        User u3 = new User("User3");
+        vendingMachine.login(admin);
+        vendingMachine.loadProduct(new Product(1,"D12","COKE"));
+        vendingMachine.loadProduct(new Product(2,"E3","BAKE_ROLLS"));
+        vendingMachine.logOut();
+        vendingMachine.login(u1);
+        u1.addCoinsToWallet(100,1);
+        u1.addCoinsToWallet(200,1);
+        vendingMachine.insertMoney(100);
+        vendingMachine.buyProduct("D12",true);
+        vendingMachine.login(u2);
+        vendingMachine.insertMoney(200);
+        vendingMachine.buyProduct("E3",true);
+        u1.getStatus();
+        u2.getStatus();
+        u3.getStatus();
+    }
+    @Test
     public void testCustomTest() throws InvalidCredentials, InvalidProductType, NoAdminPrivileges, TooManyProducts {
         /*
         Admin - restock / take supplementary money and refill 5x each, check status

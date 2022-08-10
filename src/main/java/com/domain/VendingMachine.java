@@ -166,7 +166,7 @@ public class VendingMachine {
         logger.log(Level.INFO,"Output machine status in txt file");
     }
 
-    public boolean buyProduct(String code, boolean last) throws ProductNotFound, NotEnoughMoney {
+    public boolean buyProduct(String code, boolean last) throws ProductNotFound, NotEnoughMoney, InvalidCredentials {
         int cents = 0;
         for (Map.Entry<String, Integer> entry : centsAddedByUser.entrySet())
             cents += Integer.parseInt(entry.getKey()) * entry.getValue();
@@ -184,6 +184,8 @@ public class VendingMachine {
                     }
                     logger.log(Level.INFO, "Item " + entry.getKey().getCode() + " has been bought by user "+user.getUserName()+"\n");
                     user.addTransaction(entry.getKey());
+                    if(last)
+                        login(null);
                     if (entry.getValue() == 0)
                         productsInInventory.remove(entry.getKey());
                     return true;
@@ -207,7 +209,7 @@ public class VendingMachine {
             if (!productsInInventory.containsKey(product)) {
                 productsInInventory.put(product, 0);
             }
-            if (productsInInventory.get(product) == 5) {
+            if (productsInInventory.get(product) == 10) {
                 throw new TooManyProducts();
             } else {
                 productsInInventory.put(product, productsInInventory.get(product) + 1);
@@ -292,8 +294,7 @@ public class VendingMachine {
         else {
             logger.log(Level.INFO, "Wait for the previous user to finish!\n");
         }
-        if (user == null)
-            throw new InvalidCredentials("Credentials cannot be empty!");
+        this.user = user;
     }
 
     public void logOut() throws NoAdminPrivileges {

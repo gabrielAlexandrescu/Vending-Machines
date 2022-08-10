@@ -23,12 +23,5 @@ public class SodasVendingMachine extends  VendingMachine{
             }
         } catch (IllegalArgumentException e){
             throw new InvalidProductType("soda");}
-
-        if (productsInInventory.get(product) == 10) {
-            throw new TooManyProducts();
-        } else {
-            productsInInventory.put(product, productsInInventory.get(product) + 1);
-        }
-
     }
 }
