@@ -334,8 +334,5 @@ public class VendingMachineTests {
         snacksVendingMachine.takeProfits();
         utilitiesVendingMachine.takeProfits();
         System.out.println(admin.getUserWallet());
-        // VM1: 270-15+125 = 270+110 = 285 || 400+100-100-20-10-5 = 300-35 = 265
-        // VM2:
-        // ACTUAL SUM = 2000+200*2+100*4+50*2+10+5*5 = 2955
     }
 }
