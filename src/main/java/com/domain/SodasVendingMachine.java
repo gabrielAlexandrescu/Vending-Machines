@@ -16,7 +16,7 @@ public class SodasVendingMachine extends  VendingMachine{
             if (user.isAdmin()) {
                 if (!productsInInventory.containsKey(product)) {
                     valid = Sodas.valueOf(product.getName().toUpperCase());
-                    productsInInventory.put(product, 0);
+                    productsInInventory.put(product, 1);
                 } else super.loadProduct(product);
             } else {
                 throw new NoAdminPrivileges("Loading product unsuccesful");
