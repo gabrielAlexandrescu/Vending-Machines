@@ -181,11 +181,11 @@ public class VendingMachine {
                 if (cents >= (int) (entry.getKey().getPrice() * 100)) {
                     entry.setValue(entry.getValue() - 1);
                     if (!last) {
-                        centsAddedByUser.put("Current money", (int) (cents - (entry.getKey().getPrice() * 100)));
+                        centsAddedByUser.put("Current money", (cents - (int)(entry.getKey().getPrice() * 100)));
                     } else {
                         centsAddedByUser.put("Current money",0);
                         addCentsToInventory();
-                        giveChange((int) (cents - (entry.getKey().getPrice() * 100)));
+                        giveChange((cents - (int)(entry.getKey().getPrice() * 100)));
                     }
                     logger.log(Level.INFO, "Item " + entry.getKey().getCode() + " has been bought by user " + user.getUserName() + "\n");
                     user.addTransaction(entry.getKey());

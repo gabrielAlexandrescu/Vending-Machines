@@ -228,7 +228,7 @@ public class VendingMachineTests {
         Product skittles = new Product(.55,"A3","SKITTLES");
         Product mask = new Product(1.8,"A1","FPP2_MASK");
         Product magnet = new Product(15,"A3","MAGNET");
-        Product gum = new Product(.55,"A4","GUM");
+        Product gum = new Product(0.55,"A4","GUM");
         sodasVendingMachine.loadProduct(coke);
         sodasVendingMachine.loadProduct(coke);
         sodasVendingMachine.loadProduct(fanta);
@@ -333,6 +333,5 @@ public class VendingMachineTests {
         sodasVendingMachine.takeProfits();
         snacksVendingMachine.takeProfits();
         utilitiesVendingMachine.takeProfits();
-        System.out.println(admin.getUserWallet());
     }
 }
