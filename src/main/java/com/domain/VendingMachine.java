@@ -18,12 +18,15 @@ public class VendingMachine {
     protected LinkedHashMap<Product, Integer> productsInInventory;
     protected LinkedHashMap<String, Integer> centsAddedByUser;
     protected LinkedHashMap<String, Integer> change;
+
+    protected LinkedHashMap<Product, Integer> transactions;
     protected final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     public VendingMachine(Admin admin, boolean canTakeBills) {
         this.user = null;
         this.admin = admin;
         this.canTakeBills = canTakeBills;
+        this.transactions = new LinkedHashMap<>();
         this.centsInInventory = new LinkedHashMap<>();
         this.productsInInventory = new LinkedHashMap<>();
         this.centsAddedByUser = new LinkedHashMap<>();
@@ -125,40 +128,51 @@ public class VendingMachine {
             logger.log(Level.INFO, "User " + user.getUserName() + " added " + cents + " euros");
         }
     }
-    public void getStatus() throws IOException {
-        // de adaugat cate tranzactii+ suma lor;
-        // de resetat tranzactii cand se da unload money
-        File file = new File("src/main/resources/output.txt");
+
+    public void getStatus(String filename) throws IOException {
+        File file = new File("src/main/resources/" + filename);
         FileWriter fw = new FileWriter(file);
         BufferedWriter bw = new BufferedWriter(fw);
-        bw.write("  Current cents and bills in inventory:\n");
-        bw.write("  -------------\n");
-        bw.write("  50 euros -> " + centsInInventory.get("5000") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  20 euros -> " + centsInInventory.get("2000") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  10 euros -> " + centsInInventory.get("1000") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  5 euros -> " + centsInInventory.get("500") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  2 euros -> " + centsInInventory.get("200") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  1 euro -> " + centsInInventory.get("100") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  50 cents -> " + centsInInventory.get("50") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  20 cents -> " + centsInInventory.get("20") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  10 cents -> " + centsInInventory.get("10") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  5 cents -> " + centsInInventory.get("5") + "\n");
-        bw.write("  -------------\n");
-        bw.write("  1 cents -> " + centsInInventory.get("1") + "\n");
-        bw.write("  -------------------------------------------------------\n");
+        double sumOfTransactions = 0;
+        bw.write("\tCurrent cents and bills in inventory:\n");
+        bw.write("\t-------------\n");
+        bw.write("\t50 euros -> " + centsInInventory.get("5000") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t20 euros -> " + centsInInventory.get("2000") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t10 euros -> " + centsInInventory.get("1000") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t5 euros -> " + centsInInventory.get("500") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t2 euros -> " + centsInInventory.get("200") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t1 euro -> " + centsInInventory.get("100") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t50 cents -> " + centsInInventory.get("50") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t20 cents -> " + centsInInventory.get("20") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t10 cents -> " + centsInInventory.get("10") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t5 cents -> " + centsInInventory.get("5") + "\n");
+        bw.write("\t-------------\n");
+        bw.write("\t1 cents -> " + centsInInventory.get("1") + "\n");
+        bw.write("\t-------------------------------------------------------\n");
         for (Map.Entry<Product, Integer> entry : productsInInventory.entrySet()) {
-            bw.write("  " + entry.getKey().toString() + entry.getValue() + " products \n");
-            bw.write("  -------------------------------------------------------\n");
+            bw.write("\t" + entry.getKey().toString() + " " + entry.getValue() + " products \n");
+            bw.write("\t-------------------------------------------------------\n");
         }
+        bw.write("\n\tTransactions since last admin operation: \n\n");
+        for (Map.Entry<Product, Integer> entry : transactions.entrySet()) {
+            int counter = entry.getValue();
+            while (counter > 0) {
+                sumOfTransactions += entry.getKey().getPrice();
+                bw.write("\tItem " + entry.getKey().getName() + " in row " + entry.getKey().getCode() + " has been bought for " + entry.getKey().getPrice() + " euros \n");
+                bw.write("\t--------------------------------------------------------------\n");
+                counter--;
+            }
+        }
+        bw.write("\tAll these transactions add up to " + String.format("%.2f", sumOfTransactions) + " euros");
         bw.close();
         logger.log(Level.INFO, "Output machine status in txt file");
     }
@@ -181,11 +195,16 @@ public class VendingMachine {
                 if (cents >= (int) (entry.getKey().getPrice() * 100)) {
                     entry.setValue(entry.getValue() - 1);
                     if (!last) {
-                        centsAddedByUser.put("Current money", (cents - (int)(entry.getKey().getPrice() * 100)));
+                        centsAddedByUser.put("Current money", (cents - (int) (entry.getKey().getPrice() * 100)));
                     } else {
-                        centsAddedByUser.put("Current money",0);
+                        centsAddedByUser.put("Current money", 0);
                         addCentsToInventory();
-                        giveChange((cents - (int)(entry.getKey().getPrice() * 100)));
+                        giveChange((cents - (int) (entry.getKey().getPrice() * 100)));
+                    }
+                    if (!transactions.containsKey(entry.getKey())) {
+                        transactions.put(entry.getKey(), 1);
+                    } else {
+                        transactions.put(entry.getKey(), transactions.get(entry.getKey()) + 1);
                     }
                     logger.log(Level.INFO, "Item " + entry.getKey().getCode() + " has been bought by user " + user.getUserName() + "\n");
                     user.addTransaction(entry.getKey());
@@ -272,14 +291,13 @@ public class VendingMachine {
                     user.addCoinsToWallet(Integer.parseInt(key), centsInInventory.get(key) - 10);
                     centsInInventory.put(key, 10);
                     valid = true;
-                }
-                else if(centsInInventory.get(key)>0)
-                {
-                    profits-=(10-centsInInventory.get(key))*Integer.parseInt(key);
+                } else if (centsInInventory.get(key) > 0) {
+                    profits -= (10 - centsInInventory.get(key)) * Integer.parseInt(key);
                 }
             }
             if (valid) {
                 logger.log(Level.INFO, "The profits have been added to admins wallet. With a total profit of: " + (double) profits / 100 + " euros\n");
+                transactions.clear();
                 return true;
             } else {
                 throw new NotEnoughMoney("There are no profits!");

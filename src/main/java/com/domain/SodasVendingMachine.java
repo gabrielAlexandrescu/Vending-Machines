@@ -4,6 +4,8 @@ import com.exceptions.NoAdminPrivileges;
 import com.exceptions.TooManyProducts;
 import com.product_types.Sodas;
 
+import java.io.IOException;
+
 
 public class SodasVendingMachine extends  VendingMachine{
     public SodasVendingMachine(Admin admin) {
@@ -23,5 +25,8 @@ public class SodasVendingMachine extends  VendingMachine{
             }
         } catch (IllegalArgumentException e){
             throw new InvalidProductType("soda");}
+    }
+    public void getStatus() throws IOException {
+        super.getStatus("sodasOutput.txt");
     }
 }

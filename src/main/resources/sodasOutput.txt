@@ -1,38 +1,40 @@
 	Current cents and bills in inventory:
 	-------------
-	50 euros -> 0
+	50 euros -> 10
 	-------------
-	20 euros -> 0
+	20 euros -> 10
 	-------------
-	10 euros -> 1
+	10 euros -> 10
 	-------------
-	5 euros -> 0
+	5 euros -> 10
 	-------------
-	2 euros -> 9
+	2 euros -> 10
 	-------------
-	1 euro -> 4
+	1 euro -> 13
 	-------------
-	50 cents -> 5
+	50 cents -> 11
 	-------------
-	20 cents -> 0
+	20 cents -> 10
 	-------------
-	10 cents -> 8
+	10 cents -> 10
 	-------------
-	5 cents -> 10
+	5 cents -> 15
 	-------------
-	1 cents -> 0
+	1 cents -> 10
 	-------------------------------------------------------
-	Coke 1 products 
+	COKE 1 products 
 	-------------------------------------------------------
-	Nuj 1 products 
+	FANTA 1 products 
+	-------------------------------------------------------
+	SPRITE 3 products 
 	-------------------------------------------------------
 
 	Transactions since last admin operation: 
 
-	Item Coke in row D12 has been bought for 3.5 euros 
+	Item FANTA in row B2 has been bought for 1.2 euros 
 	--------------------------------------------------------------
-	Item Cigar in row E1 has been bought for 12.55 euros 
+	Item COKE in row A1 has been bought for 1.3 euros 
 	--------------------------------------------------------------
-	Item Cigar in row E1 has been bought for 12.55 euros 
+	Item SPRITE in row C3 has been bought for 1.25 euros 
 	--------------------------------------------------------------
-	All these transactions add up to 28.60 euros
+	All these transactions add up to 3.75 euros

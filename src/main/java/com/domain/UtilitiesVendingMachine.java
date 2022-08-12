@@ -4,6 +4,8 @@ import com.exceptions.NoAdminPrivileges;
 import com.exceptions.TooManyProducts;
 import com.product_types.Utilities;
 
+import java.io.IOException;
+
 public class UtilitiesVendingMachine extends  VendingMachine{
     public UtilitiesVendingMachine(Admin admin) {
         super(admin,true);
@@ -22,5 +24,8 @@ public class UtilitiesVendingMachine extends  VendingMachine{
             }
         } catch (IllegalArgumentException e){
             throw new InvalidProductType("utility");}
+    }
+    public void getStatus() throws IOException {
+        super.getStatus("utilitiesOutput.txt");
     }
 }

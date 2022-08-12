@@ -1,0 +1,44 @@
+	Current cents and bills in inventory:
+	-------------
+	50 euros -> 10
+	-------------
+	20 euros -> 10
+	-------------
+	10 euros -> 10
+	-------------
+	5 euros -> 10
+	-------------
+	2 euros -> 12
+	-------------
+	1 euro -> 11
+	-------------
+	50 cents -> 8
+	-------------
+	20 cents -> 9
+	-------------
+	10 cents -> 9
+	-------------
+	5 cents -> 9
+	-------------
+	1 cents -> 10
+	-------------------------------------------------------
+	CHIPS 1 products 
+	-------------------------------------------------------
+	SKITTLES 2 products 
+	-------------------------------------------------------
+
+	Transactions since last admin operation: 
+
+	Item SKITTLES in row A3 has been bought for 0.55 euros 
+	--------------------------------------------------------------
+	Item SKITTLES in row A3 has been bought for 0.55 euros 
+	--------------------------------------------------------------
+	Item SKITTLES in row A3 has been bought for 0.55 euros 
+	--------------------------------------------------------------
+	Item PEANUTS in row C1 has been bought for 0.6 euros 
+	--------------------------------------------------------------
+	Item PEANUTS in row A2 has been bought for 0.6 euros 
+	--------------------------------------------------------------
+	Item CHIPS in row B2 has been bought for 0.8 euros 
+	--------------------------------------------------------------
+	All these transactions add up to 3.65 euros

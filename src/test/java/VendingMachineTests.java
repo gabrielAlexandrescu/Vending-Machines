@@ -71,7 +71,7 @@ public class VendingMachineTests {
         vendingMachine.insertMoney(50);
         vendingMachine.insertMoney(5);
         assertTrue(vendingMachine.buyProduct(p2.getCode(), true));
-        vendingMachine.getStatus();
+        vendingMachine.getStatus("output.txt");
     }
 
     @Test
@@ -200,7 +200,7 @@ public class VendingMachineTests {
         u3.getStatus();
     }
     @Test
-    public void testCustomTest() throws InvalidProductType, NoAdminPrivileges, TooManyProducts, ProductNotFound, NotEnoughMoney,TooMuchMoney, InvalidCurrency {
+    public void testCustomTest() throws InvalidProductType, NoAdminPrivileges, TooManyProducts, ProductNotFound, NotEnoughMoney, TooMuchMoney, InvalidCurrency, IOException {
         LinkedHashMap<String,Integer> cents = Utils.formatHashMap(10,10,10,10,10,10,10,10,10,10,10);
         User u1 = new User("User1");
         User u2 = new User("User2");
@@ -217,6 +217,7 @@ public class VendingMachineTests {
         snacksVendingMachine.setCentsInInventory(cents);
         sodasVendingMachine.setCentsInInventory(cents);
         utilitiesVendingMachine.setCentsInInventory(cents);
+        //============================================================//
         Product coke = new Product(1.3,"A1","COKE");
         Product fanta = new Product(1.2,"A2","FANTA");
         Product secondFanta = new Product(1.2,"B2","FANTA");
@@ -229,6 +230,7 @@ public class VendingMachineTests {
         Product mask = new Product(1.8,"A1","FPP2_MASK");
         Product magnet = new Product(15,"A3","MAGNET");
         Product gum = new Product(0.55,"A4","GUM");
+        //==================================================================//
         sodasVendingMachine.loadProduct(coke);
         sodasVendingMachine.loadProduct(coke);
         sodasVendingMachine.loadProduct(fanta);
@@ -330,6 +332,9 @@ public class VendingMachineTests {
         System.out.println(snacksVendingMachine.getCentsInInventory());
         System.out.println(sodasVendingMachine.getCentsInInventory());
         System.out.println(utilitiesVendingMachine.getCentsInInventory());
+        sodasVendingMachine.getStatus();
+        snacksVendingMachine.getStatus();
+        utilitiesVendingMachine.getStatus();
         sodasVendingMachine.takeProfits();
         snacksVendingMachine.takeProfits();
         utilitiesVendingMachine.takeProfits();
