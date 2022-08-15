@@ -22,9 +22,9 @@
 	-------------
 	1 cents -> 0
 	-------------------------------------------------------
-	Coke 1 products 
+	Coke 1 products in D12
 	-------------------------------------------------------
-	Nuj 1 products 
+	Nuj 1 products in A20
 	-------------------------------------------------------
 
 	Transactions since last admin operation: 
@@ -35,4 +35,4 @@
 	--------------------------------------------------------------
 	Item Cigar in row E1 has been bought for 12.55 euros 
 	--------------------------------------------------------------
-	All these transactions add up to 29 euros
+	All these transactions add up to 28.60 euros
