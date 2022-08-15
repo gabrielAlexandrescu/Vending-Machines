@@ -159,7 +159,7 @@ public class VendingMachine {
         bw.write("\t1 cents -> " + centsInInventory.get("1") + "\n");
         bw.write("\t-------------------------------------------------------\n");
         for (Map.Entry<Product, Integer> entry : productsInInventory.entrySet()) {
-            bw.write("\t" + entry.getKey().toString() + " " + entry.getValue() + " products \n");
+            bw.write("\t" + entry.getKey().toString() + " " + entry.getValue() + " products in "+entry.getKey().getCode()+"\n");
             bw.write("\t-------------------------------------------------------\n");
         }
         bw.write("\n\tTransactions since last admin operation: \n\n");
