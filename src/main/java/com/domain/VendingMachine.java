@@ -56,7 +56,7 @@ public class VendingMachine {
                     while (entry.getValue() > 0) {
                         entry.setValue(entry.getValue() - 1);
                         if (Integer.parseInt(entry.getKey()) < 100) {
-                            logger.log(Level.INFO, "A coin of " + entry.getKey() + " eurocents has been returned!\n");
+                            logger.log(Level.INFO, "A coin of " + entry.getKey() + " euro-cents has been returned!\n");
                         } else if (Integer.parseInt(entry.getKey()) <= 200) {
                             logger.log(Level.INFO, "A coin of " + Integer.parseInt(entry.getKey()) / 100 + " euros has been returned!\n");
                         } else if (canTakeBills) {
@@ -93,7 +93,7 @@ public class VendingMachine {
         return cents == 0;
     }
 
-    public void insertMoney(int cents) throws InvalidCurrency, TooMuchMoney, NotEnoughMoney {
+    private void checkIfMoneyValid(int cents) throws InvalidCurrency, TooMuchMoney, NotEnoughMoney {
         try {
             if (centsInInventory.get(String.valueOf(cents)) >= 100) {
                 cancelTransaction();
@@ -108,6 +108,19 @@ public class VendingMachine {
             logger.log(Level.SEVERE, "Error: ", new InvalidCurrency());
             throw new InvalidCurrency();
         }
+    }
+
+    public void insertMoney(int cents) throws InvalidCurrency, TooMuchMoney, NotEnoughMoney {
+        try {
+            checkIfMoneyValid(cents);
+        }
+        catch (InvalidCurrency e){
+            throw new InvalidCurrency();
+        }
+        catch (TooMuchMoney e)
+        {
+            throw new TooMuchMoney("The machine has too many coins of " + cents + " cents");
+        }
         if (cents == 1 || cents == 5 || cents == 10 || cents == 20 || cents == 50 || cents == 100 || cents == 200) {
             if (user.getUserWallet().get(String.valueOf(cents)) <= 0) {
                 cancelTransaction();
@@ -116,7 +129,7 @@ public class VendingMachine {
             centsAddedByUser.put(String.valueOf(cents), centsAddedByUser.get(String.valueOf(cents)) + 1);
             centsAddedByUser.put("Current money", centsAddedByUser.get("Current money") + cents);
             user.removeCoinsFromWallet(cents, 1);
-            logger.log(Level.INFO, "User " + user.getUserName() + " added " + cents + " eurocents");
+            logger.log(Level.INFO, "User " + user.getUserName() + " added " + cents + " euro-cents");
         } else if (canTakeBills && ((cents == 500) || (cents) == 1000 || (cents == 2000) || (cents == 5000))) {
             if (user.getUserWallet().get(String.valueOf(cents)) <= 0) {
                 cancelTransaction();
@@ -159,7 +172,7 @@ public class VendingMachine {
         bw.write("\t1 cents -> " + centsInInventory.get("1") + "\n");
         bw.write("\t-------------------------------------------------------\n");
         for (Map.Entry<Product, Integer> entry : productsInInventory.entrySet()) {
-            bw.write("\t" + entry.getKey().toString() + " " + entry.getValue() + " products in "+entry.getKey().getCode()+"\n");
+            bw.write("\t" + entry.getKey().toString() + " " + entry.getValue() + " products in " + entry.getKey().getCode() + "\n");
             bw.write("\t-------------------------------------------------------\n");
         }
         bw.write("\n\tTransactions since last admin operation: \n\n");
@@ -174,7 +187,7 @@ public class VendingMachine {
         }
         bw.write("\tAll these transactions add up to " + String.format("%.2f", sumOfTransactions) + " euros");
         bw.close();
-        logger.log(Level.INFO, "Output machine status in txt file");
+        logger.log(Level.INFO, "Output machine status in txt file\n");
     }
 
     private boolean containsProductInCode(String code) {
@@ -214,6 +227,7 @@ public class VendingMachine {
                         productsInInventory.remove(entry.getKey());
                     return true;
                 } else {
+                    logger.log(Level.WARNING, "The user hasn't inserted enough money!\n");
                     throw new NotEnoughMoney();
                 }
             }
@@ -236,12 +250,15 @@ public class VendingMachine {
                 productsInInventory.put(product, 0);
             }
             if (productsInInventory.get(product) == 5) {
+                logger.log(Level.SEVERE, "There are too many products in requested row!\n");
                 throw new TooManyProducts();
             } else {
                 productsInInventory.put(product, productsInInventory.get(product) + 1);
+                logger.log(Level.INFO, "The product has been successfully loaded!\n");
             }
         } else {
-            throw new NoAdminPrivileges("Loading product unsuccesful");
+            logger.log(Level.SEVERE, "User tried to load a product!\n");
+            throw new NoAdminPrivileges("Loading product unsuccessful");
         }
     }
 
@@ -249,6 +266,7 @@ public class VendingMachine {
         if (user.isAdmin()) {
             for (String key : centsInInventory.keySet()) {
                 if (centsInInventory.get(key) >= 100) {
+                    logger.log(Level.SEVERE, "There is too much money in the machine!\n");
                     if (Integer.parseInt(key) >= 200 && canTakeBills)
                         throw new TooMuchMoney("The machine is full of " + key + " euros bills!");
                     else {
@@ -257,18 +275,27 @@ public class VendingMachine {
                 }
             }
             setCentsInInventory(cents);
-        } else throw new NoAdminPrivileges("Loading money unsuccesful!");
+        } else {
+            logger.log(Level.SEVERE, "User tried to load money without admin privileges!\n");
+            throw new NoAdminPrivileges("Loading money unsuccessful!");
+        }
     }
 
     public void unloadProduct(Product product) throws ProductNotFound, NoAdminPrivileges {
         if (!user.isAdmin())
-            throw new NoAdminPrivileges("Unloading product unsuccesful!");
+            throw new NoAdminPrivileges("Unloading product unsuccessful!");
         else {
+            if (productsInInventory.size() == 1 && productsInInventory.get(product) == 1) {
+                transactions.clear();
+                logger.log(Level.INFO, "All the products have been unloaded; transactions have been reset!\n");
+            }
             if (productsInInventory.get(product) == 1)
                 productsInInventory.remove(product);
-            else if (!productsInInventory.containsKey(product))
+            else if (!productsInInventory.containsKey(product)) {
+                logger.log(Level.SEVERE, "The product to unload cannot be found!\n");
                 throw new ProductNotFound();
-            else productsInInventory.put(product, productsInInventory.get(product) - 1);
+            } else productsInInventory.put(product, productsInInventory.get(product) - 1);
+            logger.log(Level.INFO, "The product has been unloaded!\n");
         }
     }
 
@@ -278,7 +305,12 @@ public class VendingMachine {
                 user.addCoinsToWallet(Integer.parseInt(key), centsInInventory.get(key));
             }
             setCentsInInventory(zeroCents);
-        } else throw new NoAdminPrivileges("Unloading money unsuccesful");
+            logger.log(Level.INFO, "Successfully unloaded money!Transactions have been reset!\n");
+            transactions.clear();
+        } else {
+            logger.log(Level.SEVERE, "User tried to unload money without admin privileges!\n");
+            throw new NoAdminPrivileges("Unloading money unsuccessful");
+        }
     }
 
     public boolean takeProfits() throws NoAdminPrivileges, NotEnoughMoney {
@@ -297,12 +329,13 @@ public class VendingMachine {
             }
             if (valid) {
                 logger.log(Level.INFO, "The profits have been added to admins wallet. With a total profit of: " + (double) profits / 100 + " euros\n");
-                transactions.clear();
                 return true;
             } else {
+                logger.log(Level.SEVERE, "There are no profits to be taken!\n");
                 throw new NotEnoughMoney("There are no profits!");
             }
         } else {
+            logger.log(Level.SEVERE, "User tried to take profits from machine!\n");
             throw new NoAdminPrivileges("Only admins can take profit from machine!");
         }
     }
@@ -314,21 +347,37 @@ public class VendingMachine {
             entry.setValue(0);
         }
         user = null;
+        logger.log(Level.INFO, "The transaction has been canceled!\n");
     }
 
 
     public void login(User user) {
         if (this.user != null) {
-            logger.log(Level.INFO, "Wait for the previous user to finish!\n");
+            logger.log(Level.INFO, "Next user tried to login while current user is still logged in!\n");
         } else {
             this.user = user;
+            logger.log(Level.INFO, "Login successful!\n");
+        }
+    }
+
+    public void login(Admin admin) throws InvalidCredentials {
+        if (Objects.equals(this.admin.getPassword(), admin.getPassword()) && Objects.equals(admin.getUserName(), this.admin.getUserName())) {
+            this.user = admin;
+            logger.log(Level.INFO, "The admin has started using the machine!\n");
+        } else {
+            logger.log(Level.SEVERE, "Invalid credentials were input for admin login!\n");
+            throw new InvalidCredentials("Logging in as admin failed!");
         }
     }
 
     public void logOut() throws NoAdminPrivileges {
-        if (user.isAdmin())
+        if (user.isAdmin()) {
             user = null;
-        else throw new NoAdminPrivileges("Users should not be able to manually log out!");
+            logger.log(Level.INFO, "The admin has left the machine!\n");
+        } else {
+            logger.log(Level.SEVERE, "User tried to log out manually!\n");
+            throw new NoAdminPrivileges("Users should not be able to manually log out!");
+        }
     }
 
 

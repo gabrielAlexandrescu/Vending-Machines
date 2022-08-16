@@ -2,35 +2,37 @@
 	-------------
 	50 euros -> 10
 	-------------
-	20 euros -> 10
+	20 euros -> 11
 	-------------
 	10 euros -> 10
 	-------------
 	5 euros -> 10
 	-------------
-	2 euros -> 10
+	2 euros -> 9
 	-------------
-	1 euro -> 10
+	1 euro -> 9
 	-------------
-	50 cents -> 10
+	50 cents -> 11
 	-------------
-	20 cents -> 10
+	20 cents -> 9
 	-------------
-	10 cents -> 10
+	10 cents -> 11
 	-------------
-	5 cents -> 10
+	5 cents -> 9
 	-------------
 	1 cents -> 10
 	-------------------------------------------------------
-	FPP2_MASK 5 products in A1
+	FPP2_MASK 1 products in A1
 	-------------------------------------------------------
-	GUM 5 products in A4
-	-------------------------------------------------------
-	CIGAR 5 products in A2
-	-------------------------------------------------------
-	MAGNET 5 products in A3
+	GUM 4 products in A4
 	-------------------------------------------------------
 
 	Transactions since last admin operation: 
 
-	All these transactions add up to 0.00 euros
+	Item MAGNET in row A3 has been bought for 15.0 euros 
+	--------------------------------------------------------------
+	Item FPP2_MASK in row A1 has been bought for 1.8 euros 
+	--------------------------------------------------------------
+	Item GUM in row A4 has been bought for 0.55 euros 
+	--------------------------------------------------------------
+	All these transactions add up to 17.35 euros

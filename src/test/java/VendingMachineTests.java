@@ -18,7 +18,7 @@ public class VendingMachineTests {
     private final UtilitiesVendingMachine utilitiesVendingMachine = new UtilitiesVendingMachine(new Admin("Test", "nuj"));
 
     @Test
-    public void testChange() throws NoAdminPrivileges, NotEnoughMoney, TooMuchMoney {
+    public void testChange() throws NoAdminPrivileges, NotEnoughMoney, TooMuchMoney, InvalidCredentials {
         LinkedHashMap<String, Integer> cents;
         cents = Utils.formatHashMap(0, 0, 0, 1, 1, 2, 3, 0, 12, 10, 0);
         vendingMachine.login(admin);
@@ -34,7 +34,7 @@ public class VendingMachineTests {
     }
 
     @Test
-    public void testBuy() throws IOException, ProductNotFound, TooManyProducts, NotEnoughMoney, InvalidCurrency, NoAdminPrivileges, InvalidProductType, TooMuchMoney {
+    public void testBuy() throws IOException, ProductNotFound, TooManyProducts, NotEnoughMoney, InvalidCurrency, NoAdminPrivileges, InvalidProductType, TooMuchMoney, InvalidCredentials {
         LinkedHashMap<String, Integer> cents;
         vendingMachine.login(admin);
         cents = Utils.formatHashMap(0, 0, 0, 0, 1, 2, 3, 0, 12, 10, 0);
@@ -75,7 +75,7 @@ public class VendingMachineTests {
     }
 
     @Test
-    public void testLoadingProducts() throws TooManyProducts, ProductNotFound, NoAdminPrivileges, InvalidProductType {
+    public void testLoadingProducts() throws TooManyProducts, ProductNotFound, NoAdminPrivileges, InvalidProductType, InvalidCredentials {
         Product p1 = new Product(12.5, "D12", null);
         Product p2 = new Product(1, "E2", null);
         Product p3 = new Product(2.5, "A1", null);
@@ -91,7 +91,7 @@ public class VendingMachineTests {
     }
 
     @Test
-    public void testLoadingMoney() throws NoAdminPrivileges, TooMuchMoney {
+    public void testLoadingMoney() throws NoAdminPrivileges, TooMuchMoney, InvalidCredentials {
         LinkedHashMap<String, Integer> cents;
         vendingMachine.login(admin);
         cents = Utils.formatHashMap(1, 1, 10, 1, 1, 2, 3, 1, 12, 10, 1);
@@ -106,7 +106,7 @@ public class VendingMachineTests {
     }
 
     @Test
-    public void testUsers() throws ProductNotFound, TooManyProducts, NotEnoughMoney, NoAdminPrivileges, InvalidProductType, TooMuchMoney,InvalidCurrency {
+    public void testUsers() throws ProductNotFound, TooManyProducts, NotEnoughMoney, NoAdminPrivileges, InvalidProductType, TooMuchMoney, InvalidCurrency, InvalidCredentials {
         User user = new User("pablo");
         vendingMachine.login(admin);
         LinkedHashMap<String, Integer> cents;
@@ -136,7 +136,7 @@ public class VendingMachineTests {
     }
 
     @Test
-    public void testCancellingTransaction() throws InvalidCurrency, NoAdminPrivileges, TooMuchMoney, NotEnoughMoney {
+    public void testCancellingTransaction() throws InvalidCurrency, NoAdminPrivileges, TooMuchMoney, NotEnoughMoney, InvalidCredentials {
         User user = new User("test");
         LinkedHashMap<String, Integer> userWallet;
         userWallet = Utils.formatHashMap(0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0);
@@ -154,7 +154,7 @@ public class VendingMachineTests {
     }
 
     @Test
-    public void testProductTypes() throws InvalidProductType, NoAdminPrivileges, TooManyProducts {
+    public void testProductTypes() throws InvalidProductType, NoAdminPrivileges, TooManyProducts, InvalidCredentials {
         snacksVendingMachine.login(admin);
         sodasVendingMachine.login(admin);
         utilitiesVendingMachine.login(admin);
@@ -168,7 +168,7 @@ public class VendingMachineTests {
     }
 
     @Test
-    public void testTakeProfits() throws NotEnoughMoney, NoAdminPrivileges {
+    public void testTakeProfits() throws NotEnoughMoney, NoAdminPrivileges, InvalidCredentials {
         vendingMachine.login(admin);
         LinkedHashMap<String, Integer> cents = Utils.formatHashMap(11, 10, 5, 3, 2, 1, 5, 5, 5, 5, 5);
         vendingMachine.setCentsInInventory(cents);
@@ -178,7 +178,7 @@ public class VendingMachineTests {
     }
 
     @Test
-    public void testUserStatus() throws InvalidProductType, NoAdminPrivileges, TooManyProducts, ProductNotFound, NotEnoughMoney, IOException, TooMuchMoney, InvalidCurrency {
+    public void testUserStatus() throws InvalidProductType, NoAdminPrivileges, TooManyProducts, ProductNotFound, NotEnoughMoney, IOException, TooMuchMoney, InvalidCurrency, InvalidCredentials {
         User u1 = new User("User1");
         User u2 = new User("User2");
         User u3 = new User("User3");
@@ -200,7 +200,7 @@ public class VendingMachineTests {
         u3.getStatus();
     }
     @Test
-    public void testCustomTest() throws InvalidProductType, NoAdminPrivileges, TooManyProducts, ProductNotFound, NotEnoughMoney, TooMuchMoney, InvalidCurrency, IOException {
+    public void testCustomTest() throws InvalidProductType, NoAdminPrivileges, TooManyProducts, ProductNotFound, NotEnoughMoney, TooMuchMoney, InvalidCurrency, IOException, InvalidCredentials {
         LinkedHashMap<String,Integer> cents = Utils.formatHashMap(10,10,10,10,10,10,10,10,10,10,10);
         User u1 = new User("User1");
         User u2 = new User("User2");
@@ -421,4 +421,50 @@ public class VendingMachineTests {
         utilitiesVendingMachine.loadProduct(magnet);
         utilitiesVendingMachine.loadProduct(gum);
     }
+    @Test
+    public void testTooManyProducts() throws InvalidProductType, NoAdminPrivileges, TooManyProducts, InvalidCredentials {
+        Product p1 = new Product(3.5, "D12", "Coke");
+        vendingMachine.login(admin);
+        vendingMachine.loadProduct(p1);
+        vendingMachine.loadProduct(p1);
+        vendingMachine.loadProduct(p1);
+        vendingMachine.loadProduct(p1);
+        vendingMachine.loadProduct(p1);
+        assertThrows(TooManyProducts.class,()->vendingMachine.loadProduct(p1));
+    }
+    @Test
+    public void testTooMuchMoney() throws InvalidCredentials {
+        LinkedHashMap<String,Integer> oneHundredCents = Utils.formatHashMap(100,100,100,100,100,100,100,100,100,100,100);
+        admin.setUserWallet(oneHundredCents);
+        vendingMachine.setCentsInInventory(oneHundredCents);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(5000));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(2000));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(1000));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(500));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(200));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(100));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(50));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(20));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(10));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(5));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.insertMoney(1));
+        vendingMachine.login(admin);
+        assertThrows(TooMuchMoney.class,()->vendingMachine.loadMoney(oneHundredCents));
+    }
+    @Test
+    public void testCredentials(){
+        Admin falseAdmin = new Admin("False","false");
+        assertThrows(InvalidCredentials.class,()->vendingMachine.login(falseAdmin));
+    }
+
 }
