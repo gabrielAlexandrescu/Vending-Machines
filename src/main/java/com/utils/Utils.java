@@ -3,7 +3,7 @@ package com.utils;
 import java.util.LinkedHashMap;
 
 public class Utils {
-    public static final LinkedHashMap<String,Integer> zeroCents = formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
+    public static final LinkedHashMap<String,Integer> zeroMoney = formatHashMap(0,0,0,0,0,0,0,0,0,0,0);
     public static LinkedHashMap<String,Integer> formatHashMap(int fiftyEuros,int twentyEuros,int tenEuros,int fiveEuros,int twoEuros,
                                                               int oneEuro,int fiftyCents,int twentyCents,int tenCents,int fiveCents,int oneCent) {
         LinkedHashMap<String,Integer> map = new LinkedHashMap<>();
