@@ -16,6 +16,7 @@ public class UtilitiesVendingMachine extends  VendingMachine{
             Utilities valid;
             if (user.isAdmin()) {
                 if (!productsInInventory.containsKey(product)) {
+                    // TODO same
                     valid = Utilities.valueOf(product.getName().toUpperCase());
                     productsInInventory.put(product, 1);
                 } else super.loadProduct(product);

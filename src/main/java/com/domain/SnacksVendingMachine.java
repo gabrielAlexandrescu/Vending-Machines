@@ -18,6 +18,7 @@ public class SnacksVendingMachine extends VendingMachine {
             Snacks valid;
             if (user.isAdmin()) {
                 if (!productsInInventory.containsKey(product)) {
+                    // TODO pare a fi nefolosit
                     valid = Snacks.valueOf(product.getName().toUpperCase());
                     productsInInventory.put(product, 1);
                 } else super.loadProduct(product);
